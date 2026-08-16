@@ -74,10 +74,8 @@ const SignInPage = async (props: {
     }
   }
 
-  const title = landlordName ? `Sign in to ${landlordName}` : 'Sign In';
-  const description = landlordName
-    ? `Access your ${landlordName} resident or landlord account.`
-    : 'Sign in to your account';
+  const title = 'Sign In';
+  const description = 'Sign in to your contractor account';
 
   return (
     <div className='w-full max-w-md mx-auto'>

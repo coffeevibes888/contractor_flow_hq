@@ -30,12 +30,13 @@ const Footer = () => {
           {/* Links */}
           <div className='flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-semibold'>
             <Link href='/' className='text-black hover:text-blue-500 transition-colors'>Home</Link>
+            <Link href='/listings' className='text-black hover:text-blue-500 transition-colors'>Listings</Link>
+            <Link href='/contractor-marketplace' className='text-black hover:text-blue-500 transition-colors'>Contractors</Link>
             <Link href='/blog' className='text-black hover:text-blue-500 transition-colors'>Blog</Link>
             <Link href='/faq' className='text-black hover:text-blue-500 transition-colors'>FAQs</Link>
+            <Link href='/docs/api' className='text-black hover:text-blue-500 transition-colors'>API</Link>
             <Link href='/about' className='text-black hover:text-blue-500 transition-colors'>About</Link>
             <Link href='/contact' className='text-black hover:text-blue-500 transition-colors'>Contact</Link>
-            <Link href='/privacy' className='text-black hover:text-blue-500 transition-colors'>Privacy</Link>
-            <Link href='/terms' className='text-black hover:text-blue-500 transition-colors'>Terms</Link>
           </div>
         </div>
       </div>

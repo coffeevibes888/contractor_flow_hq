@@ -7,7 +7,7 @@ import AgentMobileDrawer from '@/components/agent/agent-mobile-drawer';
 import TenantMobileMenu from '@/components/mobile/tenant-mobile-menu';
 import HomeownerMobileDrawer from '@/components/homeowner/homeowner-mobile-drawer';
 import MainNav from '@/app/user/main-nav';
-// import { getCategoryTree } from '@/lib/actions/product.actions';
+import { getCategoryTree } from '@/lib/actions/product.actions';
 import { prisma } from '@/db/prisma';
 import { headers } from 'next/headers';
 import { auth } from '@/auth';
@@ -22,7 +22,7 @@ async function getLandlordForRequest() {
 }
 
 const Header = async () => {
-  // const categories = await getCategoryTree(); // PM feature - disabled for ContractorFlowHQ
+  const categories = await getCategoryTree();
   const landlord = await getLandlordForRequest();
   const displayName = landlord?.name || 'Contractor Flow HQ';
   const session = await auth();
@@ -87,8 +87,13 @@ const Header = async () => {
         {/* Centered Nav Links */}
         <div className="flex-1 flex items-center justify-center gap-1 text-sm font-medium">
           <Link href='/' className="px-2.5 py-1.5 text-black hover:underline">Home</Link>
-          <Link href='/sign-up?role=contractor' className="px-2.5 py-1.5 text-rose-600 font-semibold hover:underline whitespace-nowrap">
-            Start Free Trial
+          <Link href='/listings' className="px-2.5 py-1.5 text-black hover:underline">Listings</Link>
+
+          <Link
+            href='/free-lease-builder'
+            className="px-2.5 py-1.5 text-sky-600 font-semibold hover:underline whitespace-nowrap"
+          >
+            Free Lease Builder
           </Link>
 
           {/* Resources Dropdown */}
@@ -112,7 +117,41 @@ const Header = async () => {
           </div>
 
           <div className="relative group text-black">
-            {/* Categories mega-menu commented out for ContractorFlowHQ */}
+            {categories.length > 0 && (
+              <div className="absolute left-0 top-full mt-1 hidden group-hover:flex border rounded-md shadow-lg z-50 min-w-[520px] bg-white">
+                <div className="w-52 border-r py-3">
+                  {categories.map((cat) => (
+                    <Link
+                      key={cat.category}
+                      href={`/search?category=${encodeURIComponent(cat.category)}`}
+                      className="flex items-center justify-between px-4 py-1.5 text-sm"
+                    >
+                      <span>{cat.category}</span>
+                      <span className="text-xs text-slate-400">{cat.count}</span>
+                    </Link>
+                  ))}
+                </div>
+                <div className="flex-1 grid grid-cols-2 gap-4 p-4 max-h-72 overflow-y-auto">
+                  {categories.map((cat) => (
+                    cat.subCategories.length > 0 && (
+                      <div key={cat.category} className="space-y-1">
+                        <p className="text-xs font-semibold uppercase">{cat.category}</p>
+                        <div className="flex flex-col space-y-0.5">
+                          {cat.subCategories.map((sub) => (
+                            <Link
+                              key={`${cat.category}-${sub}`}
+                              href={`/search?category=${encodeURIComponent(cat.category)}&subCategory=${encodeURIComponent(sub)}`}
+                              className="text-sm hover:underline">
+                              {sub}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

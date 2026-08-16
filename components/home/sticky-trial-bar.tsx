@@ -11,7 +11,7 @@ export default function StickyTrialBar() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const isContractor =
-    searchParams.get('for') === 'contractor' || pathname?.startsWith('/contractor');
+    searchParams.get('for') === 'contractor' || pathname?.startsWith('/contractor') || pathname === '/';
 
   useEffect(() => {
     const dismissed = sessionStorage.getItem('stickyBarDismissed');

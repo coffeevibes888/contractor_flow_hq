@@ -1,11 +1,8 @@
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 // import RoleSelectionClient from './role-selection-client';
-// ROLE PICKER DISABLED: All users signing up from the homepage are assumed to
-// be property managers. Role is set via ?role=landlord on the sign-up URL.
-// Tenants arrive via the listings page (role inferred from context).
-// Existing tenants use the /join invite link.
-// Re-enable by uncommenting the import and the return below.
+// ROLE PICKER DISABLED: All users signing up from ContractorFlowHQ are
+// contractors. Role is set to 'contractor' by default in the sign-up form.
 
 export const dynamic = 'force-dynamic';
 
@@ -39,9 +36,8 @@ export default async function OnboardingPage() {
     case 'homeowner':
       return redirect('/homeowner/dashboard');
     default:
-      // Unknown role — send to admin overview and let ensureRoleForContext
-      // promote them to landlord (the default for main-site signups).
-      return redirect('/admin/overview');
+      // ContractorFlowHQ: Default to contractor dashboard for all signups
+      return redirect('/contractor-dashboard');
   }
 
   // RE-ENABLE ROLE PICKER: replace the switch above with:

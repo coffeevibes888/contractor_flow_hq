@@ -70,7 +70,7 @@ const SignUpForm = () => {
     }
   }, [rawLc]);
 
-  const callbackUrl = searchParams.get('callbackUrl') || '/admin/overview';
+  const callbackUrl = searchParams.get('callbackUrl') || '/contractor-dashboard';
 
   // Derive subdomain from pathname when the sign-up page is mounted under
   // /[subdomain]/sign-up. Empty string means "root domain".
@@ -92,18 +92,11 @@ const SignUpForm = () => {
   const role = searchParams.get('role') || '';
   const skipOnboarding = searchParams.get('skipOnboarding') === 'true';
 
-  // If the user is coming from a pricing/ad flow with an *explicit* role
-  // AND plan, build a subscription URL directly and skip the generic
-  // onboarding role picker. We deliberately do NOT trigger this path when
-  // role is missing — in that case the user gets routed to /onboarding
-  // and picks their own role, which is the safe default.
+  // If the user is coming from a pricing/ad flow with a plan, build a
+  // subscription URL directly. ContractorFlowHQ: always route to contractor onboarding.
   const pricingCallback =
-    role && plan
-      ? (role === 'contractor'
-          ? `/onboarding/contractor/subscription?plan=${plan}${skipOnboarding ? '&skipOnboarding=true' : ''}`
-          : role === 'landlord' || role === 'property_manager'
-            ? `/onboarding/landlord/subscription?plan=${plan}${skipOnboarding ? '&skipOnboarding=true' : ''}`
-            : null)
+    plan
+      ? `/onboarding/contractor/subscription?plan=${plan}${skipOnboarding ? '&skipOnboarding=true' : ''}`
       : null;
   
   const SignUpButton = () => {
@@ -118,8 +111,8 @@ const SignUpForm = () => {
 
   return (
     <div className='space-y-4'>
-      {/* ── Lease-builder context banner ── */}
-      {fromLease && leaseCtx && (
+      {/* ── Lease-builder context banner — PM feature, hidden for ContractorFlowHQ ── */}
+      {/* {fromLease && leaseCtx && (
         <div className='rounded-lg bg-sky-500/10 border border-sky-400/30 p-4 mb-2'>
           <div className='flex items-start gap-2.5'>
             <Building2 className='h-4 w-4 text-sky-400 mt-0.5 flex-shrink-0' />
@@ -134,16 +127,16 @@ const SignUpForm = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
-      {/* Show context message if coming from property application */}
-      {fromProperty && (
+      {/* Show context message if coming from property application — PM feature, hidden */}
+      {/* {fromProperty && (
         <div className='rounded-lg bg-violet-500/10 border border-violet-400/30 p-4 mb-4'>
           <p className='text-sm text-violet-100'>
             <strong className='text-white'>Almost there!</strong> Create an account to complete your rental application.
           </p>
         </div>
-      )}
+      )} */}
 
       {/* Show context message if coming from pricing page */}
       {role && plan && (
@@ -184,8 +177,9 @@ const SignUpForm = () => {
             who clicked an ad to be silently created as landlords and pushed
             into a subscription picker. If the user hasn't declared a role,
             they go to /onboarding and pick one. */}
-        {!fromProperty && role && (
-          <input type='hidden' name='role' value={role} />
+        {/* ContractorFlowHQ: Always default to contractor role */}
+        {!fromProperty && (
+          <input type='hidden' name='role' value={role || 'contractor'} />
         )}
         {/* Invite code from QR / email invite — links the tenant to a landlord */}
         {inviteCode && (

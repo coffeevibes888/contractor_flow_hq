@@ -10,7 +10,7 @@ const HomeContactCard = () => {
   const pathname = usePathname();
   // Treat both /?for=contractor and /contractor as the contractor side.
   const isContractor =
-    searchParams.get('for') === 'contractor' || pathname?.startsWith('/contractor');
+    searchParams.get('for') === 'contractor' || pathname?.startsWith('/contractor') || pathname === '/';
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');

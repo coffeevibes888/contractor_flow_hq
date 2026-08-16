@@ -30,10 +30,7 @@ const SignUpPage = async ({
     // If the ad/pricing flow sent a plan + role, route straight to the subscription page
     if (params.plan || params.skipOnboarding === 'true') {
       const plan = params.plan || 'starter';
-      const route =
-        params.role === 'contractor'
-          ? `/onboarding/contractor/subscription?plan=${plan}`
-          : `/onboarding/landlord/subscription?plan=${plan}${params.skipOnboarding === 'true' ? '&skipOnboarding=true' : ''}`;
+      const route = `/onboarding/contractor/subscription?plan=${plan}`;
       return redirect(route);
     }
 
@@ -47,14 +44,16 @@ const SignUpPage = async ({
       return redirect('/onboarding');
     }
     
-    // Role-based redirect for completed users
+    // Role-based redirect for completed users — contractor-first
     const role = session.user.role;
-    if (role === 'admin' || role === 'landlord') {
+    if (role === 'contractor') {
+      return redirect('/contractor-dashboard');
+    } else if (role === 'admin' || role === 'landlord') {
       return redirect('/admin');
     } else if (role === 'superAdmin') {
       return redirect('/super-admin');
     } else {
-      return redirect('/user');
+      return redirect('/contractor-dashboard');
     }
   }
 
@@ -73,7 +72,7 @@ const SignUpPage = async ({
           </Link>
           <CardTitle className='text-center'>Create Your Account</CardTitle>
           <CardDescription className='text-center'>
-            Join thousands of landlords, tenants, and agents on our platform
+            Start running your contracting business from one platform
           </CardDescription>
         </CardHeader>
         <CardContent className='space-y-4'>

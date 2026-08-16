@@ -9,7 +9,7 @@ export default function NewsletterSignup() {
   const pathname = usePathname();
   // Treat both /?for=contractor and /contractor as the contractor side.
   const isContractor =
-    searchParams.get('for') === 'contractor' || pathname?.startsWith('/contractor');
+    searchParams.get('for') === 'contractor' || pathname?.startsWith('/contractor') || pathname === '/';
 
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');

@@ -74,7 +74,7 @@ const CustomerReviews = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const isContractor =
-    searchParams.get('for') === 'contractor' || pathname?.startsWith('/contractor');
+    searchParams.get('for') === 'contractor' || pathname?.startsWith('/contractor') || pathname === '/';
 
   const reviews = isContractor ? contractorReviews : pmReviews;
   const stats = isContractor ? contractorStats : "";

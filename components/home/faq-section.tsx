@@ -95,7 +95,7 @@ export default function FAQSection() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const isContractor =
-    searchParams.get('for') === 'contractor' || pathname?.startsWith('/contractor');
+    searchParams.get('for') === 'contractor' || pathname?.startsWith('/contractor') || pathname === '/';
   const faqs = isContractor ? contractorFaqs : pmFaqs;
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
