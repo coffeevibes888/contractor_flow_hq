@@ -1,0 +1,367 @@
+// Short-Term Rental Management System Schema
+// Add these models to your main schema.prisma file
+
+// Short-Term Rental Property
+model ShortTermRental {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  landlordId  String   @db.Uuid
+  propertyId  String?  @db.Uuid // Link to existing Property if applicable
+  name        String
+  slug        String   @unique
+  description String?
+  address     Json     @db.Json
+  
+  // Property details
+  propertyType    String // entire_place, private_room, shared_room
+  bedrooms        Int
+  bathrooms       Decimal  @db.Decimal(3, 1)
+  beds            Int
+  maxGuests       Int
+  sizeSqFt        Int?
+  
+  // Media
+  images          String[] @default([])
+  videoUrl        String?
+  virtualTourUrl  String?
+  
+  // Amenities
+  amenities       String[] @default([]) // wifi, kitchen, parking, pool, etc.
+  
+  // House rules
+  houseRules      String?
+  checkInTime     String   @default("15:00")
+  checkOutTime    String   @default("11:00")
+  checkInInstructions String?
+  
+  // Policies
+  cancellationPolicy String @default("moderate") // flexible, moderate, strict
+  instantBooking     Boolean @default(false)
+  minStay            Int     @default(1)
+  maxStay            Int?
+  advanceNotice      Int     @default(1) // days
+  preparationTime    Int     @default(1) // days between bookings
+  
+  // Pricing
+  basePrice          Decimal @db.Decimal(12, 2)
+  weekendPrice       Decimal? @db.Decimal(12, 2)
+  weeklyDiscount     Decimal? @db.Decimal(5, 2) // percentage
+  monthlyDiscount    Decimal? @db.Decimal(5, 2) // percentage
+  cleaningFee        Decimal? @db.Decimal(12, 2)
+  securityDeposit    Decimal? @db.Decimal(12, 2)
+  extraGuestFee      Decimal? @db.Decimal(12, 2)
+  extraGuestThreshold Int    @default(2)
+  
+  // Platform fees (for tracking)
+  airbnbFeePercent   Decimal? @db.Decimal(5, 2)
+  vrboFeePercent     Decimal? @db.Decimal(5, 2)
+  bookingFeePercent  Decimal? @db.Decimal(5, 2)
+  
+  // iCal integration
+  icalExportUrl      String?  @unique
+  icalImportUrls     Json?    @db.Json // Array of {platform, url}
+  lastIcalSync       DateTime? @db.Timestamp(6)
+  
+  // Status
+  isActive           Boolean  @default(true)
+  isListed           Boolean  @default(false)
+  listedOn           String[] @default([]) // airbnb, vrbo, booking, direct
+  
+  createdAt          DateTime @default(now()) @db.Timestamp(6)
+  updatedAt          DateTime @updatedAt
+  
+  landlord           Landlord  @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+  property           Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  
+  bookings           STRBooking[]
+  blockedDates       STRBlockedDate[]
+  pricingRules       STRPricingRule[]
+  cleanings          STRCleaning[]
+  expenses           STRExpense[]
+  reviews            STRReview[]
+  
+  @@index([landlordId])
+  @@index([propertyId])
+  @@index([isActive])
+  @@index([slug])
+}
+
+// Short-Term Rental Booking
+model STRBooking {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  rentalId          String   @db.Uuid
+  guestId           String?  @db.Uuid
+  
+  // Guest information (for external bookings)
+  guestName         String
+  guestEmail        String
+  guestPhone        String?
+  numberOfGuests    Int
+  
+  // Booking details
+  checkIn           DateTime @db.Date
+  checkOut          DateTime @db.Date
+  nights            Int
+  
+  // Pricing
+  basePrice         Decimal  @db.Decimal(12, 2)
+  cleaningFee       Decimal  @default(0) @db.Decimal(12, 2)
+  serviceFee        Decimal  @default(0) @db.Decimal(12, 2)
+  taxes             Decimal  @default(0) @db.Decimal(12, 2)
+  totalPrice        Decimal  @db.Decimal(12, 2)
+  
+  // Payment
+  paymentStatus     String   @default("pending") // pending, paid, refunded, cancelled
+  paidAt            DateTime? @db.Timestamp(6)
+  paymentMethod     String?  // card, bank_transfer, cash, platform
+  stripePaymentIntentId String?
+  
+  // Booking source
+  source            String   @default("direct") // direct, airbnb, vrbo, booking, manual
+  externalBookingId String?  // ID from external platform
+  platformFee       Decimal? @db.Decimal(12, 2)
+  
+  // Status
+  status            String   @default("pending") // pending, confirmed, checked_in, checked_out, cancelled
+  confirmationCode  String   @unique
+  
+  // Special requests
+  specialRequests   String?
+  notes             String?
+  
+  // Check-in/out
+  checkedInAt       DateTime? @db.Timestamp(6)
+  checkedOutAt      DateTime? @db.Timestamp(6)
+  
+  // Cancellation
+  cancelledAt       DateTime? @db.Timestamp(6)
+  cancellationReason String?
+  refundAmount      Decimal?  @db.Decimal(12, 2)
+  
+  createdAt         DateTime @default(now()) @db.Timestamp(6)
+  updatedAt         DateTime @updatedAt
+  
+  rental            ShortTermRental @relation(fields: [rentalId], references: [id], onDelete: Cascade)
+  guest             STRGuest?       @relation(fields: [guestId], references: [id], onDelete: SetNull)
+  
+  cleanings         STRCleaning[]
+  messages          STRMessage[]
+  
+  @@index([rentalId])
+  @@index([guestId])
+  @@index([checkIn])
+  @@index([checkOut])
+  @@index([status])
+  @@index([source])
+  @@index([confirmationCode])
+}
+
+// Guest Profile
+model STRGuest {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  landlordId      String   @db.Uuid
+  
+  name            String
+  email           String
+  phone           String?
+  address         Json?    @db.Json
+  
+  // Preferences
+  preferences     Json?    @db.Json
+  notes           String?
+  
+  // Stats
+  totalBookings   Int      @default(0)
+  totalSpent      Decimal  @default(0) @db.Decimal(12, 2)
+  avgRating       Decimal  @default(0) @db.Decimal(3, 2)
+  
+  // Status
+  isBlocked       Boolean  @default(false)
+  blockedReason   String?
+  
+  createdAt       DateTime @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime @updatedAt
+  
+  landlord        Landlord       @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+  bookings        STRBooking[]
+  reviews         STRReview[]
+  messages        STRMessage[]
+  
+  @@unique([landlordId, email])
+  @@index([landlordId])
+  @@index([email])
+}
+
+// Blocked Dates (for maintenance, personal use, etc.)
+model STRBlockedDate {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  rentalId    String   @db.Uuid
+  startDate   DateTime @db.Date
+  endDate     DateTime @db.Date
+  reason      String?  // maintenance, personal_use, other
+  notes       String?
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  
+  rental      ShortTermRental @relation(fields: [rentalId], references: [id], onDelete: Cascade)
+  
+  @@index([rentalId])
+  @@index([startDate])
+  @@index([endDate])
+}
+
+// Pricing Rules (seasonal, special events, etc.)
+model STRPricingRule {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  rentalId    String   @db.Uuid
+  name        String
+  startDate   DateTime @db.Date
+  endDate     DateTime @db.Date
+  price       Decimal  @db.Decimal(12, 2)
+  minStay     Int?
+  priority    Int      @default(0) // Higher priority rules override lower
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  
+  rental      ShortTermRental @relation(fields: [rentalId], references: [id], onDelete: Cascade)
+  
+  @@index([rentalId])
+  @@index([startDate])
+  @@index([endDate])
+  @@index([isActive])
+}
+
+// Cleaning Schedule
+model STRCleaning {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  rentalId        String    @db.Uuid
+  bookingId       String?   @db.Uuid
+  
+  scheduledDate   DateTime  @db.Date
+  scheduledTime   String?
+  
+  // Assignment
+  assignedTo      String?   // Contractor ID or name
+  assignedToEmail String?
+  assignedToPhone String?
+  
+  // Status
+  status          String    @default("scheduled") // scheduled, in_progress, completed, cancelled
+  completedAt     DateTime? @db.Timestamp(6)
+  
+  // Checklist
+  checklist       Json?     @db.Json // Array of tasks with completion status
+  photos          String[]  @default([])
+  notes           String?
+  
+  // Cost
+  cost            Decimal?  @db.Decimal(12, 2)
+  
+  createdAt       DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime  @updatedAt
+  
+  rental          ShortTermRental @relation(fields: [rentalId], references: [id], onDelete: Cascade)
+  booking         STRBooking?     @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  
+  @@index([rentalId])
+  @@index([bookingId])
+  @@index([scheduledDate])
+  @@index([status])
+}
+
+// Expense Tracking
+model STRExpense {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  rentalId    String   @db.Uuid
+  landlordId  String   @db.Uuid
+  
+  date        DateTime @db.Date
+  amount      Decimal  @db.Decimal(12, 2)
+  category    String   // cleaning, maintenance, supplies, utilities, platform_fees, other
+  description String
+  vendor      String?
+  
+  // Receipt
+  receiptUrl  String?
+  receiptData Json?    @db.Json
+  
+  // Tax deductible
+  isTaxDeductible Boolean @default(true)
+  
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime @updatedAt
+  
+  rental      ShortTermRental @relation(fields: [rentalId], references: [id], onDelete: Cascade)
+  landlord    Landlord        @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+  
+  @@index([rentalId])
+  @@index([landlordId])
+  @@index([date])
+  @@index([category])
+}
+
+// Reviews (from guests and for guests)
+model STRReview {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  rentalId    String   @db.Uuid
+  guestId     String?  @db.Uuid
+  
+  // Review type
+  type        String   // guest_to_host, host_to_guest
+  
+  // Ratings
+  overallRating     Int // 1-5
+  cleanlinessRating Int?
+  accuracyRating    Int?
+  communicationRating Int?
+  locationRating    Int?
+  valueRating       Int?
+  
+  // Comments
+  comment     String?
+  privateNote String? // Private note for host only
+  
+  // Source
+  source      String   @default("direct") // direct, airbnb, vrbo, booking
+  externalReviewId String?
+  
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  
+  rental      ShortTermRental @relation(fields: [rentalId], references: [id], onDelete: Cascade)
+  guest       STRGuest?       @relation(fields: [guestId], references: [id], onDelete: SetNull)
+  
+  @@index([rentalId])
+  @@index([guestId])
+  @@index([type])
+}
+
+// Guest Communication
+model STRMessage {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  bookingId   String   @db.Uuid
+  guestId     String?  @db.Uuid
+  
+  // Message details
+  from        String   // host, guest
+  subject     String?
+  message     String
+  
+  // Status
+  isRead      Boolean  @default(false)
+  readAt      DateTime? @db.Timestamp(6)
+  
+  // Attachments
+  attachments String[] @default([])
+  
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  
+  booking     STRBooking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  guest       STRGuest?  @relation(fields: [guestId], references: [id], onDelete: SetNull)
+  
+  @@index([bookingId])
+  @@index([guestId])
+  @@index([createdAt])
+}
+
+// Add to Landlord model:
+// shortTermRentals ShortTermRental[]
+// strGuests        STRGuest[]
+// strExpenses      STRExpense[]

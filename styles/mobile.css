@@ -1,0 +1,318 @@
+/* Mobile-First Responsive Design for Property Management */
+
+/* Base mobile styles */
+@media (max-width: 640px) {
+  /* Container adjustments */
+  .wrapper {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Header mobile optimizations */
+  header .wrapper {
+    padding: 0.75rem 1rem;
+  }
+
+  /* Admin sidebar - convert to drawer on mobile */
+  .admin-sidebar {
+    transform: translateX(-100%);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    background: white;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 50;
+    transition: transform 0.3s ease;
+  }
+
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .admin-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+    display: none;
+  }
+
+  .admin-overlay.show {
+    display: block;
+  }
+
+  /* Mobile menu button */
+  .mobile-menu-button {
+    display: block;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 60;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Main content area */
+  .admin-main {
+    margin-left: 0;
+    padding: 4rem 1rem 2rem;
+  }
+
+  /* Card layouts */
+  .card-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Form layouts */
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Tables - make them scrollable */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    min-width: 600px;
+  }
+
+  /* Buttons - larger touch targets and better visibility */
+  button, .btn {
+    min-height: 48px;
+    padding: 0.875rem 1.5rem;
+    font-size: 16px;
+    font-weight: 600;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Primary action buttons - extra prominent on mobile */
+  button[data-tour="add-property"],
+  .btn-primary,
+  a[href*="/new"] button,
+  a[href*="/add"] button {
+    min-height: 52px;
+    font-size: 17px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  }
+
+  /* Input fields - larger touch targets */
+  input, select, textarea {
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  /* Analytics dashboard mobile */
+  .analytics-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .analytics-tabs {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .analytics-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .analytics-tab {
+    flex-shrink: 0;
+    padding: 0.75rem 1rem;
+    white-space: nowrap;
+  }
+
+  /* Property cards */
+  .property-card {
+    margin-bottom: 1rem;
+  }
+
+  .property-card img {
+    height: 200px;
+    object-fit: cover;
+  }
+
+  /* Application forms */
+  .application-form {
+    padding: 1rem;
+  }
+
+  .form-section {
+    margin-bottom: 2rem;
+  }
+
+  /* Modal dialogs */
+  .modal-content {
+    margin: 1rem;
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+  }
+
+  /* Navigation */
+  .nav-links {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .nav-link {
+    padding: 1rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  /* Footer */
+  footer {
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+/* Tablet styles */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .analytics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-sidebar {
+    width: 240px;
+  }
+
+  .admin-main {
+    margin-left: 240px;
+  }
+}
+
+/* Touch-friendly interactions */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger touch targets */
+  button, .btn, input, select, textarea {
+    min-height: 44px;
+  }
+
+  /* Remove hover states, use active states instead */
+  button:hover, .btn:hover {
+    transform: none;
+  }
+
+  button:active, .btn:active {
+    transform: scale(0.98);
+  }
+
+  /* Card interactions */
+  .card {
+    transition: none;
+  }
+
+  .card:active {
+    transform: scale(0.98);
+  }
+
+  /* Link interactions */
+  a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Crisper text and borders */
+  .card {
+    border-width: 0.5px;
+  }
+
+  .logo {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Dark mode support for mobile */
+@media (prefers-color-scheme: dark) {
+  @media (max-width: 640px) {
+    .admin-sidebar {
+      background: #1f2937;
+      color: white;
+    }
+
+    .mobile-menu-button {
+      background: #374151;
+      border-color: #4b5563;
+      color: white;
+    }
+
+    .modal-content {
+      background: #1f2937;
+      color: white;
+    }
+  }
+}
+
+/* Landscape mobile optimizations */
+@media (max-width: 640px) and (orientation: landscape) {
+  .admin-sidebar {
+    width: 320px;
+  }
+
+  .modal-content {
+    max-height: 90vh;
+  }
+
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Small phones */
+@media (max-width: 380px) {
+  .wrapper {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+    transform: translateX(-100%);
+  }
+
+  .analytics-tab {
+    padding: 0.5rem 0.75rem;
+    font-size: 14px;
+  }
+
+  button, .btn {
+    padding: 0.5rem 1rem;
+    font-size: 14px;
+  }
+}

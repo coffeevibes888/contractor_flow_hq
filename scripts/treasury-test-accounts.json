@@ -1,0 +1,18 @@
+{
+  "landlord": {
+    "email": "earthangelallen888@outlook.com",
+    "connectedAccountId": "acct_1Sn43BPQ3HGleHH4",
+    "treasuryStatus": "active",
+    "status": "created",
+    "financialAccountId": "fa_1Sn49BPQ3HGleHH4ZcAd4AdW",
+    "balance": 10000
+  },
+  "contractor": {
+    "email": "warrioroflight778@outlook.com",
+    "connectedAccountId": "acct_1Sn43LAX0iZZXT1x",
+    "treasuryStatus": "active",
+    "status": "created",
+    "financialAccountId": "fa_1Sn49CAX0iZZXT1x5Z67vGo6",
+    "balance": 10000
+  }
+}

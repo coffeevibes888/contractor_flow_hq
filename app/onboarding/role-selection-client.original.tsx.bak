@@ -1,0 +1,255 @@
+// ROLE PICKER DISABLED — see app/onboarding/page.tsx for re-enable instructions.
+// This file is preserved intact. Uncomment the export below to restore the picker.
+/*
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import {
+  Home, Building2, Key, Wrench, Users, HousePlus,
+  ChevronRight, Sparkles, Crown,
+} from 'lucide-react';
+
+interface RoleSelectionClientProps {
+  userName: string;
+}
+
+// Featured roles — all three roles displayed as full-width cards
+const featuredRoles = [
+  {
+    id: 'landlord',
+    title: 'Property Manager',
+    subtitle: 'or Landlord',
+    description: 'Manage properties, collect rent, screen tenants, and handle maintenance all in one place',
+    icon: Building2,
+    iconGradient: 'from-violet-500 to-purple-500',
+    iconShadow: 'shadow-violet-500/25',
+    accent: 'text-violet-600',
+    badge: 'Most Popular',
+    badgeIcon: Crown,
+    badgeGradient: 'from-violet-500 to-purple-500',
+  },
+  {
+    id: 'tenant',
+    title: 'Looking to Rent',
+    subtitle: 'Find a home',
+    description: 'Find your next home & pay rent online',
+    icon: Home,
+    iconGradient: 'from-emerald-500 to-teal-500',
+    iconShadow: 'shadow-emerald-500/25',
+    accent: 'text-emerald-600',
+    badge: 'Renters',
+    badgeIcon: Sparkles,
+    badgeGradient: 'from-emerald-500 to-teal-500',
+  },
+  {
+    id: 'existing_tenant',
+    title: 'Existing Tenant',
+    subtitle: 'Invited by landlord',
+    description: 'Invited by my landlord to sign up',
+    icon: Key,
+    iconGradient: 'from-cyan-500 to-blue-500',
+    iconShadow: 'shadow-cyan-500/25',
+    accent: 'text-cyan-600',
+    badge: 'Current Tenant',
+    badgeIcon: Crown,
+    badgeGradient: 'from-cyan-500 to-blue-500',
+  },
+  // Commented out for now - not promoting contractor business side yet
+  // {
+  //   id: 'contractor',
+  //   title: 'Contractor',
+  //   subtitle: 'Pro plan',
+  //   description: 'Get hired through the marketplace, receive payments, and grow your business with tools built for trades',
+  //   icon: Wrench,
+  //   iconGradient: 'from-rose-500 to-orange-500',
+  //   iconShadow: 'shadow-rose-500/25',
+  //   accent: 'text-rose-600',
+  //   badge: 'Earn Money',
+  //   badgeIcon: Sparkles,
+  //   badgeGradient: 'from-rose-500 to-orange-500',
+  // },
+];
+
+// Other roles - commented out for now (not promoting contractor business side yet)
+// const roles = [
+//   {
+//     id: 'homeowner',
+//     title: 'Homeowner',
+//     description: 'Hire contractors for repairs & renovations',
+//     icon: HousePlus,
+//     iconGradient: 'from-sky-500 to-blue-500',
+//   },
+//   {
+//     id: 'agent',
+//     title: 'Real Estate Agent',
+//     description: 'List properties & manage leads',
+//     icon: Users,
+//     iconGradient: 'from-amber-500 to-orange-500',
+//   },
+// ];
+
+export default function RoleSelectionClient({ userName }: RoleSelectionClientProps) {
+  const router = useRouter();
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  const handleRoleSelect = (roleId: string) => {
+    setSelectedRole(roleId);
+    setIsNavigating(true);
+
+    setTimeout(() => {
+      router.push(`/onboarding/${roleId}`);
+    }, 300);
+  };
+
+  return (
+    <main className='min-h-screen bg-white text-gray-900 flex items-center justify-center px-4 py-8'>
+      <div className='max-w-3xl w-full space-y-6'>
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className='text-center space-y-3'
+        >
+          <div className='inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-sky-50 to-cyan-50 border border-cyan-100 px-3 py-1 text-xs font-semibold text-cyan-700'>
+            <Sparkles className='h-3.5 w-3.5' />
+            Welcome to Property Flow HQ
+          </div>
+          <h1 className='text-3xl md:text-4xl font-bold tracking-tight text-gray-900'>
+            Hey {userName.split(' ')[0]} 👋
+          </h1>
+          <p className='text-base text-gray-600'>
+            What brings you here today?
+          </p>
+        </motion.div>
+
+        {/* Featured Roles — paid subscriptions, stacked full width */}
+        <div className='space-y-3'>
+          {featuredRoles.map((role, index) => {
+            const Icon = role.icon;
+            const BadgeIcon = role.badgeIcon;
+            const isSelected = selectedRole === role.id;
+
+            return (
+              <motion.button
+                key={role.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.15 + index * 0.05 }}
+                onClick={() => handleRoleSelect(role.id)}
+                disabled={isNavigating}
+                className={`
+                  relative w-full text-left rounded-2xl border-2 p-5 transition-all duration-300 bg-white shadow-sm
+                  ${isSelected
+                    ? `border-gray-300 ring-2 ring-offset-2 ring-${role.accent.replace('text-', '')}`
+                    : 'border-gray-200 hover:border-gray-300 hover:shadow-md'}
+                  ${isNavigating && !isSelected ? 'opacity-50' : ''}
+                  disabled:cursor-not-allowed
+                `}
+              >
+                {/* Badge */}
+                <div className={`absolute -top-2.5 left-4 flex items-center gap-1 rounded-full bg-gradient-to-r ${role.badgeGradient} px-2.5 py-0.5 text-xs font-semibold text-white shadow-md`}>
+                  <BadgeIcon className='h-3 w-3' />
+                  {role.badge}
+                </div>
+
+                <div className='flex items-center gap-4'>
+                  <div className={`flex-shrink-0 h-14 w-14 rounded-xl flex items-center justify-center bg-gradient-to-br ${role.iconGradient} shadow-lg ${role.iconShadow}`}>
+                    <Icon className='h-7 w-7 text-white' />
+                  </div>
+
+                  <div className='flex-1 min-w-0'>
+                    <div className='flex items-baseline gap-2 flex-wrap'>
+                      <h3 className='text-xl font-bold text-gray-900'>
+                        {role.title}
+                      </h3>
+                      <span className={`text-sm ${role.accent}`}>{role.subtitle}</span>
+                    </div>
+                    <p className='text-sm text-gray-600 mt-0.5'>
+                      {role.description}
+                    </p>
+                  </div>
+
+                  <ChevronRight className={`
+                    h-5 w-5 transition-transform duration-300 shrink-0
+                    ${isSelected ? `translate-x-1 ${role.accent}` : 'text-gray-400'}
+                  `} />
+                </div>
+              </motion.button>
+            );
+          })}
+        </div>
+
+        {/* Divider and Other Role Cards - Commented out for now */}
+        {/* <div className='flex items-center gap-3'>
+          <div className='flex-1 h-px bg-gray-200' />
+          <span className='text-xs text-gray-500 uppercase tracking-wider font-semibold'>
+            or select your role
+          </span>
+          <div className='flex-1 h-px bg-gray-200' />
+        </div> */}
+
+        {/* Other Role Cards — 2 column grid */}
+        {/* <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.25 }}
+          className='grid grid-cols-2 gap-3'
+        >
+          {roles.map((role, index) => {
+            const Icon = role.icon;
+            const isSelected = selectedRole === role.id;
+
+            return (
+              <motion.button
+                key={role.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.3 + 0.05 * index }}
+                onClick={() => handleRoleSelect(role.id)}
+                disabled={isNavigating}
+                className={`
+                  relative w-full text-left rounded-xl border p-3.5 transition-all duration-300 bg-white shadow-sm
+                  ${isSelected
+                    ? 'border-gray-300 ring-2 ring-offset-1 ring-gray-300 shadow-md'
+                    : 'border-gray-200 hover:border-gray-300 hover:shadow-md'}
+                  ${isNavigating && !isSelected ? 'opacity-50' : ''}
+                  disabled:cursor-not-allowed
+                `}
+              >
+                <div className='flex items-start gap-3'>
+                  <div className={`flex-shrink-0 h-10 w-10 rounded-lg flex items-center justify-center bg-gradient-to-br ${role.iconGradient}`}>
+                    <Icon className='h-5 w-5 text-white' />
+                  </div>
+
+                  <div className='flex-1 min-w-0'>
+                    <h3 className='text-sm font-semibold text-gray-900 leading-tight'>
+                      {role.title}
+                    </h3>
+                    <p className='text-xs text-gray-500 mt-0.5 leading-snug'>
+                      {role.description}
+                    </p>
+                  </div>
+                </div>
+              </motion.button>
+            );
+          })}
+        </motion.div> */}
+
+        {/* Footer */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className='text-center text-xs text-gray-500'
+        >
+          You can always change this later in your settings
+        </motion.p>
+      </div>
+    </main>
+  );
+}
+*/
