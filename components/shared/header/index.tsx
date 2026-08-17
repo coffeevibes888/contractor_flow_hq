@@ -87,13 +87,13 @@ const Header = async () => {
         {/* Centered Nav Links */}
         <div className="flex-1 flex items-center justify-center gap-1 text-sm font-medium">
           <Link href='/' className="px-2.5 py-1.5 text-black hover:underline">Home</Link>
-          <Link href='/listings' className="px-2.5 py-1.5 text-black hover:underline">Listings</Link>
+          <Link href='/contractor-marketplace' className="px-2.5 py-1.5 text-black hover:underline">Marketplace</Link>
 
           <Link
-            href='/free-lease-builder'
+            href='/free-contract-builder'
             className="px-2.5 py-1.5 text-sky-600 font-semibold hover:underline whitespace-nowrap"
           >
-            Free Lease Builder
+            Free Contract Builder
           </Link>
 
           {/* Resources Dropdown */}

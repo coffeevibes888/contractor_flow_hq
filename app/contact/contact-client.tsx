@@ -70,7 +70,7 @@ const ContactClient = () => {
             src="/images/logo.svg"
             alt={`${APP_NAME} logo watermark`}
             fill
-            className="object-contain drop-shadow-[0_0_45px_rgba(56,189,248,0.4)]"
+            className="object-contain drop-shadow-[0_0_45px_rgba(244,63,94,0.4)]"
             priority
           />
         </div>
@@ -85,14 +85,14 @@ const ContactClient = () => {
             {/* Form side */}
             <section className="space-y-6">
               <header className="space-y-2">
-                <p className="inline-flex items-center rounded-full bg-white/5 px-3 py-1 text-xs font-medium tracking-wide text-sky-200/80 ring-1 ring-white/10">
+                <p className="inline-flex items-center rounded-full bg-white/5 px-3 py-1 text-xs font-medium tracking-wide text-rose-200/80 ring-1 ring-white/10">
                   We&apos;re here to help
                 </p>
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
-                  Contact <span className="bg-gradient-to-r from-sky-300 via-cyan-300 to-blue-300 bg-clip-text text-transparent">{APP_NAME}</span>
+                  Contact <span className="bg-gradient-to-r from-rose-300 via-orange-300 to-amber-300 bg-clip-text text-transparent">{APP_NAME}</span>
                 </h1>
                 <p className="text-sm sm:text-base text-slate-300/80 max-w-xl">
-                  Have questions about our property management platform? Looking to list your properties? We&apos;d love to hear from you.
+                  Have questions about our contractor management platform? Want to grow your business? We&apos;d love to hear from you.
                 </p>
               </header>
 
@@ -107,7 +107,7 @@ const ContactClient = () => {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Your full name"
-                      className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-slate-50 outline-none transition focus:border-sky-400/70 focus:ring-2 focus:ring-sky-500/40 placeholder:text-slate-400/70"
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-slate-50 outline-none transition focus:border-rose-400/70 focus:ring-2 focus:ring-rose-500/40 placeholder:text-slate-400/70"
                     />
                   </div>
 
@@ -120,7 +120,7 @@ const ContactClient = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@example.com"
-                      className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-slate-50 outline-none transition focus:border-sky-400/70 focus:ring-2 focus:ring-sky-500/40 placeholder:text-slate-400/70"
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-slate-50 outline-none transition focus:border-rose-400/70 focus:ring-2 focus:ring-rose-500/40 placeholder:text-slate-400/70"
                     />
                   </div>
                 </div>
@@ -135,7 +135,7 @@ const ContactClient = () => {
                       value={subject}
                       onChange={(e) => setSubject(e.target.value)}
                       placeholder="What's this about?"
-                      className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-slate-50 outline-none transition focus:border-sky-400/70 focus:ring-2 focus:ring-sky-500/40 placeholder:text-slate-400/70"
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-slate-50 outline-none transition focus:border-rose-400/70 focus:ring-2 focus:ring-rose-500/40 placeholder:text-slate-400/70"
                     />
                   </div>
 
@@ -146,16 +146,16 @@ const ContactClient = () => {
                     <select
                       value={inquiryType}
                       onChange={(e) => setInquiryType(e.target.value)}
-                      className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-slate-50 outline-none transition focus:border-sky-400/70 focus:ring-2 focus:ring-sky-500/40 bg-[rgba(15,23,42,0.4)]"
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-slate-50 outline-none transition focus:border-rose-400/70 focus:ring-2 focus:ring-rose-500/40 bg-[rgba(15,23,42,0.4)]"
                     >
                       <option value="" className="bg-slate-900">
                         Select an option
                       </option>
-                      <option value="landlord" className="bg-slate-900">
-                        I&apos;m a landlord interested in the platform
+                      <option value="contractor" className="bg-slate-900">
+                        I&apos;m a contractor interested in the platform
                       </option>
-                      <option value="tenant" className="bg-slate-900">
-                        I&apos;m a tenant with questions
+                      <option value="client" className="bg-slate-900">
+                        I&apos;m a client/property manager looking to hire
                       </option>
                       <option value="support" className="bg-slate-900">
                         Technical support
@@ -179,7 +179,7 @@ const ContactClient = () => {
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Tell us how we can help you..."
                     rows={5}
-                    className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-slate-50 outline-none transition focus:border-sky-400/70 focus:ring-2 focus:ring-sky-500/40 placeholder:text-slate-400/70 resize-none"
+                    className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-slate-50 outline-none transition focus:border-rose-400/70 focus:ring-2 focus:ring-rose-500/40 placeholder:text-slate-400/70 resize-none"
                   />
                 </div>
 
@@ -191,7 +191,7 @@ const ContactClient = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-sky-500/30 transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 disabled:cursor-not-allowed disabled:opacity-70"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-rose-500/30 transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300 disabled:cursor-not-allowed disabled:opacity-70"
                   >
                     {isSubmitting ? 'Sending...' : 'Send message'}
                   </button>
@@ -211,26 +211,26 @@ const ContactClient = () => {
             </section>
 
             {/* Overview / profile side */}
-            <aside className="relative flex flex-col justify-between rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/80 via-slate-800/60 to-sky-900/40 px-5 py-6 sm:px-6 lg:px-7 lg:py-8 shadow-inner shadow-slate-950/60 overflow-hidden">
-              <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-sky-500/20 blur-3xl" />
-              <div className="pointer-events-none absolute -left-16 bottom-[-3rem] h-40 w-40 rounded-full bg-cyan-400/20 blur-3xl" />
+            <aside className="relative flex flex-col justify-between rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/80 via-slate-800/60 to-rose-900/40 px-5 py-6 sm:px-6 lg:px-7 lg:py-8 shadow-inner shadow-slate-950/60 overflow-hidden">
+              <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-rose-500/20 blur-3xl" />
+              <div className="pointer-events-none absolute -left-16 bottom-[-3rem] h-40 w-40 rounded-full bg-orange-400/20 blur-3xl" />
 
               <div className="relative space-y-5">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 text-white font-bold text-xl shadow-lg shadow-sky-500/40">
-                    R4R
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-500 to-orange-500 text-white font-bold text-xl shadow-lg shadow-rose-500/40">
+                    CF
                   </div>
                   <div>
                     <p className="text-xs font-medium uppercase tracking-[0.22em] text-slate-300/80">
                       {APP_NAME}
                     </p>
-                    <p className="text-sm text-slate-100/90">Property Management Made Simple</p>
+                    <p className="text-sm text-slate-100/90">Run Your Entire Business. One Platform.</p>
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   <p className="text-sm text-slate-200/90">
-                    We help landlords automate their property management while giving tenants a seamless rental experience. From online payments to maintenance requests — all in one place.
+                    We help contractors run their entire operation — jobs, invoices, team scheduling, inventory, and marketing — all from one platform. No more duct-taping five apps together.
                   </p>
                   <p className="text-xs text-slate-300/75">
                     Expect a response within 24-48 hours. For urgent matters, please email us directly.
@@ -244,10 +244,10 @@ const ContactClient = () => {
                     </p>
                     <p className="mt-1 font-medium break-all">
                       <a
-                        href="mailto:support@propertyflowhq.com"
-                        className="hover:text-violet-300 transition-colors"
+                        href="mailto:support@contractorflowhq.com"
+                        className="hover:text-rose-300 transition-colors"
                       >
-                        support@propertyflowhq.com
+                        support@contractorflowhq.com
                       </a>
                     </p>
                   </div>
@@ -277,11 +277,11 @@ const ContactClient = () => {
 
               <div className="relative mt-6 flex items-center justify-between gap-3 text-[11px] text-slate-300/80">
                 <p className="max-w-[70%]">
-                  Free for landlords with up to 24 units.
+                  Starting at $39/month. No per-job fees. Ever.
                 </p>
                 <div className="inline-flex items-center gap-1 rounded-full bg-white/5 px-3 py-1.5 text-[10px] font-medium tracking-wide text-emerald-200/90 ring-1 ring-emerald-400/40">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.9)]" />
-                  <span>Accepting new landlords</span>
+                  <span>Accepting new contractors</span>
                 </div>
               </div>
             </aside>
