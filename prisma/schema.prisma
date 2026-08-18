@@ -8482,3 +8482,51 @@ model PublicLeaseEsign {
   @@index([createdAt])
 }
 
+// Public Contract E-Sign — mirrors PublicLeaseEsign for the free contract builder.
+// Contractor signs first, then customer receives a token link to countersign.
+model PublicContractEsign {
+  id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  token                String    @unique @default(dbgenerated("replace(gen_random_uuid()::text, '-', '') || replace(gen_random_uuid()::text, '-', '')"))
+
+  // The contract HTML (contractor sig embedded, customer placeholder remains)
+  contractHtml         String    @db.Text
+  originalHtml         String?   @db.Text
+
+  // Contractor info
+  contractorName       String
+  contractorEmail      String
+  contractorSigDataUrl String?   @db.Text
+
+  // Customer info
+  customerName         String
+  customerEmail        String
+
+  // Contract metadata
+  jobTitle             String?
+  totalAmount          Decimal?  @db.Decimal(12, 2)
+  governingState       String?
+
+  // Signing state: pending_customer_sig → completed
+  status               String    @default("pending_customer_sig")
+
+  // Customer signing
+  customerSigDataUrl   String?   @db.Text
+  customerSignedAt     DateTime? @db.Timestamp(6)
+  customerSignedByName String?
+
+  // Final document (both signatures embedded)
+  finalContractHtml    String?   @db.Text
+
+  // Invite email tracking
+  invitesSentAt        DateTime? @db.Timestamp(6)
+  expiresAt            DateTime? @db.Timestamp(6)
+
+  createdAt            DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt            DateTime  @updatedAt @db.Timestamp(6)
+
+  @@index([token])
+  @@index([contractorEmail])
+  @@index([customerEmail])
+  @@index([status])
+  @@index([createdAt])
+}

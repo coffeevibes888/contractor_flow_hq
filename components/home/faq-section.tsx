@@ -122,7 +122,7 @@ export default function FAQSection() {
             }`}>Questions</span>
           </h2>
           <p className='text-sm md:text-base text-slate-400 max-w-2xl mx-auto'>
-            Everything you need to know about Property Flow HQ{isContractor ? ' for Contractors' : ''}
+            Everything you need to know about Contractor Flow HQ{isContractor ? '' : ' for Property Managers'}
           </p>
         </div>
 

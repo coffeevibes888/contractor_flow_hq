@@ -49,15 +49,15 @@ const homeJsonLd = [
     url: 'https://www.contractorflowhq.com',
     offers: {
       '@type': 'Offer',
-      price: '39',
+      price: '99',
       priceCurrency: 'USD',
       priceSpecification: {
         '@type': 'UnitPriceSpecification',
-        price: '39',
+        price: '99',
         priceCurrency: 'USD',
         unitText: 'MONTH',
       },
-      description: 'Contractor business management software starting at $39/mo. No per-job fees. Free 14-day trial.',
+      description: 'Contractor business management software — $99/mo unlimited. No per-job fees. 14-day free trial, no credit card.',
     },
     featureList: [
       'Job management & dispatch',
@@ -80,7 +80,7 @@ const homeJsonLd = [
 export const metadata: Metadata = {
   title: 'Contractor Business Management Software — ContractorFlowHQ',
   description:
-    'Run your entire contracting business from one platform. Jobs, invoices, leads, team scheduling, inventory, and payroll — starting at $39/mo. No per-job fees. Free trial.',
+    'Run your entire contracting business from one platform. Jobs, invoices, leads, team scheduling, inventory, and payroll — $99/mo unlimited. No per-job fees. 14-day free trial, no credit card.',
   alternates: { canonical: 'https://www.contractorflowhq.com' },
   keywords: [
     'contractor management software',
@@ -99,7 +99,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Contractor Business Management Software — ContractorFlowHQ',
     description:
-      'Jobs, invoices, leads, team scheduling, inventory, and payroll — all in one platform built for contractors. Starting at $39/mo.',
+      'Jobs, invoices, leads, team scheduling, inventory, and payroll — all in one platform built for contractors. $99/mo unlimited.',
     url: 'https://www.contractorflowhq.com',
     type: 'website',
   },
@@ -107,7 +107,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Contractor Business Management Software — ContractorFlowHQ',
     description:
-      'Jobs, invoices, leads, team scheduling, inventory, and payroll — all in one platform built for contractors. Starting at $39/mo.',
+      'Jobs, invoices, leads, team scheduling, inventory, and payroll — all in one platform built for contractors. $99/mo unlimited.',
   },
 };
 

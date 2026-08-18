@@ -6,9 +6,9 @@ import {
   FileText, Users, ClipboardList, Calendar, DollarSign,
   Shield, Scale, FileCheck, Loader2, Check, Download,
   ChevronRight, ChevronLeft, Plus, X, Hammer, AlertTriangle,
-  CheckCircle, Printer,
 } from 'lucide-react';
 import { TRADE_DEFINITIONS, type TradeType } from '@/lib/services/contractor-contract-builder';
+import PublicContractSuccess from './public-contract-success';
 
 interface Props {
   onContractGenerated?: () => void;
@@ -160,39 +160,20 @@ export default function PublicContractWizard({ onContractGenerated }: Props) {
   // ── Success: Contract generated ───────────────────────────────────────────
   if (contractHtml) {
     return (
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        <div className="bg-gradient-to-r from-orange-500 to-rose-500 px-6 py-5">
-          <div className="flex items-center gap-3">
-            <CheckCircle className="h-6 w-6 text-white" />
-            <h2 className="text-lg font-bold text-white">Your Contract is Ready!</h2>
-          </div>
-        </div>
-        <div className="p-6 space-y-4">
-          <div className="flex gap-3">
-            <button
-              onClick={() => {
-                const w = window.open('', '_blank');
-                if (w) { w.document.write(contractHtml); w.document.close(); w.print(); }
-              }}
-              className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors"
-            >
-              <Printer className="h-4 w-4" /> Print / Save as PDF
-            </button>
-            <a
-              href={`/sign-up?role=contractor&utm_source=free_contract&utm_medium=success_cta`}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-rose-500 to-orange-500 hover:from-rose-600 hover:to-orange-600 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors"
-            >
-              <FileText className="h-4 w-4" /> Send for E-Signature (Free)
-            </a>
-          </div>
-          <p className="text-xs text-gray-500">
-            Start a free 14-day trial to send this contract for e-signature, manage jobs, send invoices, and track payments — all in one place.
-          </p>
-          <div className="border border-gray-200 rounded-xl overflow-hidden mt-4">
-            <iframe srcDoc={contractHtml} className="w-full min-h-[600px] border-0" title="Contract Preview" />
-          </div>
-        </div>
-      </div>
+      <PublicContractSuccess
+        contractHtml={contractHtml}
+        email={isSignedIn ? sessionEmail : formData.emailGate}
+        isAuthenticated={isSignedIn}
+        data={{
+          contractorLegalName: formData.contractorBusinessName || formData.contractorLegalName,
+          contractorEmail: formData.contractorEmail || (isSignedIn ? sessionEmail : formData.emailGate),
+          customerName: formData.customerName,
+          customerEmail: formData.customerEmail,
+          jobTitle: formData.jobTitle,
+          totalAmount: Number(formData.totalAmount),
+          governingState: formData.governingState,
+        }}
+      />
     );
   }
 
