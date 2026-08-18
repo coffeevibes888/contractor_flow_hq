@@ -4,6 +4,8 @@
  * Supports 12+ contractor trades with state-aware provisions.
  */
 
+import { generateStateDisclosuresHtml, getStateRequirements } from './contractor-state-requirements';
+
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 export type TradeType =
@@ -692,62 +694,272 @@ export function generateContractorContractHtml(data: ContractorContractData): st
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Service Agreement - ${escHtml(data.jobTitle)}</title>
   <style>
-    @page { margin: 1in; size: letter; }
+    @page { margin: 0.75in 0.85in; size: letter; }
+    * { box-sizing: border-box; }
     body {
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: 11pt;
-      line-height: 1.6;
-      color: #1a1a1a;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.65;
+      color: #1e293b;
       max-width: 8.5in;
       margin: 0 auto;
-      padding: 1in;
+      padding: 0;
+      background: white;
     }
-    h1 { font-size: 18pt; text-align: center; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 2px; }
-    h2 { font-size: 13pt; margin-top: 28px; margin-bottom: 10px; border-bottom: 2px solid #1a1a1a; padding-bottom: 4px; }
-    h3 { font-size: 11pt; margin-top: 18px; margin-bottom: 6px; }
-    .header-meta { text-align: center; margin-bottom: 24px; font-size: 10pt; color: #555; }
-    .parties { margin: 16px 0; }
-    .party-block { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px 16px; margin: 8px 0; }
-    .party-label { font-weight: bold; font-size: 10pt; text-transform: uppercase; color: #6b7280; margin-bottom: 4px; }
-    .signature-block { margin-top: 40px; display: flex; justify-content: space-between; gap: 40px; }
-    .sig-line { flex: 1; }
-    .sig-line .line { border-bottom: 1px solid #1a1a1a; height: 40px; margin-bottom: 4px; }
-    .sig-line .label { font-size: 9pt; color: #6b7280; }
-    .placeholder { color: #2563eb; font-weight: bold; font-size: 10pt; }
-    .section-number { font-weight: bold; }
-    ul { margin: 6px 0; padding-left: 24px; }
+
+    /* ── Header / Cover Band ── */
+    .contract-header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+      color: white;
+      padding: 36px 40px;
+      border-radius: 0 0 12px 12px;
+      margin: -0.75in -0.85in 32px -0.85in;
+      width: calc(100% + 1.7in);
+    }
+    .contract-header h1 {
+      font-size: 22pt;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin: 0 0 6px 0;
+      text-transform: none;
+    }
+    .contract-header .subtitle {
+      font-size: 11pt;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    .contract-header .meta-row {
+      display: flex;
+      gap: 24px;
+      margin-top: 16px;
+      font-size: 9.5pt;
+      color: #cbd5e1;
+    }
+    .contract-header .meta-row span { display: flex; align-items: center; gap: 5px; }
+    .trade-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(251, 191, 36, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 9pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    /* ── Section Headings ── */
+    h2 {
+      font-size: 11.5pt;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 28px 0 10px 0;
+      padding: 8px 0 6px 0;
+      border-bottom: 2px solid #e2e8f0;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    h2 .section-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      background: #0f172a;
+      color: white;
+      border-radius: 50%;
+      font-size: 9pt;
+      font-weight: 700;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    /* ── Parties Block ── */
+    .parties-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 20px 0;
+    }
+    .party-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+    .party-card .party-label {
+      font-size: 8.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    .party-card .party-name {
+      font-size: 12pt;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+    .party-card .party-detail {
+      font-size: 9.5pt;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    /* ── Content ── */
+    p { margin: 8px 0; }
+    strong { color: #0f172a; }
+    ul { margin: 8px 0; padding-left: 22px; }
     li { margin: 4px 0; }
-    .trade-badge { display: inline-block; background: #1e40af; color: white; padding: 2px 10px; border-radius: 4px; font-size: 9pt; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-    .disclaimer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #d1d5db; font-size: 8pt; color: #9ca3af; text-align: center; }
-    .watermark { position: fixed; bottom: 0.5in; right: 0.5in; font-size: 7pt; color: #d1d5db; }
+
+    /* ── Key Terms Highlight ── */
+    .key-terms {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin: 16px 0;
+    }
+    .key-terms .term-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid #e0f2fe;
+      font-size: 10pt;
+    }
+    .key-terms .term-row:last-child { border-bottom: none; }
+    .key-terms .term-label { color: #475569; font-weight: 500; }
+    .key-terms .term-value { color: #0f172a; font-weight: 700; }
+
+    /* ── Milestone Table ── */
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 9.5pt; }
+    thead tr { background: #f1f5f9; }
+    th { border: 1px solid #e2e8f0; padding: 10px 14px; text-align: left; font-weight: 700; color: #334155; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.3px; }
+    td { border: 1px solid #e2e8f0; padding: 10px 14px; color: #475569; }
+
+    /* ── Signature Block ── */
+    .signature-section {
+      margin-top: 48px;
+      page-break-inside: avoid;
+    }
+    .signature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      margin-top: 20px;
+    }
+    .sig-block .sig-line {
+      border-bottom: 2px solid #0f172a;
+      height: 48px;
+      margin-bottom: 4px;
+      position: relative;
+    }
+    .sig-block .sig-line .placeholder {
+      position: absolute;
+      bottom: 8px;
+      left: 0;
+      color: #2563eb;
+      font-weight: 700;
+      font-size: 9pt;
+    }
+    .sig-block .sig-label {
+      font-size: 8.5pt;
+      color: #64748b;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .sig-block .sig-spacer { height: 24px; }
+
+    /* ── State Disclosures ── */
+    .state-disclosures { margin-top: 32px; page-break-before: always; }
+    .state-disclosures .section-heading { font-size: 12pt; margin-bottom: 10px; border-bottom: 2px solid #0f172a; padding-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+    .state-disclosures .section-intro { font-size: 10pt; color: #64748b; margin-bottom: 16px; }
+    .disclosure-box { border-radius: 8px; padding: 16px 20px; margin: 14px 0; font-size: 10pt; line-height: 1.6; }
+    .disclosure-box.cancel-box { background: #fef2f2; border: 1px solid #fca5a5; }
+    .disclosure-box.license-box { background: #fefce8; border: 1px solid #fde047; }
+    .disclosure-box.lien-box { background: #eff6ff; border: 1px solid #93c5fd; }
+    .disclosure-box.deposit-box { background: #fefce8; border: 1px solid #fbbf24; }
+    .disclosure-box.additional-box { background: #f8fafc; border: 1px solid #e2e8f0; }
+    .disclosure-box.statute-box { background: #f0fdf4; border: 1px solid #86efac; }
+    .disclosure-title { font-weight: 800; font-size: 9.5pt; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; color: #1e293b; }
+    .disclosure-meta { font-size: 9pt; color: #64748b; margin-top: 6px; font-style: italic; }
+    .disclosure-box ul { margin: 8px 0; padding-left: 20px; }
+    .disclosure-box li { margin: 4px 0; }
+
+    /* ── Footer ── */
+    .contract-footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #e2e8f0;
+      text-align: center;
+      font-size: 8pt;
+      color: #94a3b8;
+    }
+    .contract-footer .brand {
+      font-weight: 700;
+      color: #64748b;
+    }
+
+    /* ── Print adjustments ── */
+    @media print {
+      .contract-header { margin: -0.75in -0.85in 32px -0.85in; }
+      body { padding: 0; }
+    }
   </style>
 </head>
 <body>
 
-  <h1>Service Agreement</h1>
-  <div class="header-meta">
-    <span class="trade-badge">${escHtml(trade.label)}</span><br>
-    Contract #_______________ &nbsp;&nbsp;|&nbsp;&nbsp; Date: ${today}<br>
-    ${data.governingState ? `State of: ${escHtml(data.governingState)}` : ''}
+  <!-- Header -->
+  <div class="contract-header">
+    <div class="trade-badge">${escHtml(trade.icon)} ${escHtml(trade.label)}</div>
+    <h1>Service Agreement</h1>
+    <div class="subtitle">${escHtml(data.jobTitle)}</div>
+    <div class="meta-row">
+      <span>📅 ${today}</span>
+      <span>📍 ${escHtml(data.governingState)}</span>
+      <span>📄 Contract #_______________</span>
+    </div>
   </div>
 
-  <div class="parties">
-    <div class="party-block">
+  <!-- Parties -->
+  <div class="parties-grid">
+    <div class="party-card">
       <div class="party-label">Contractor</div>
-      <strong>${escHtml(data.contractorBusinessName || data.contractorLegalName)}</strong><br>
-      ${escHtml(data.contractorAddress)}<br>
-      Email: ${escHtml(data.contractorEmail)} &nbsp;&nbsp;|&nbsp;&nbsp; Phone: ${escHtml(data.contractorPhone)}<br>
-      ${data.contractorLicenseNumber ? `License #: ${escHtml(data.contractorLicenseNumber)}` : ''}
-      ${data.contractorInsurancePolicy ? `<br>Insurance Policy: ${escHtml(data.contractorInsurancePolicy)}` : ''}
+      <div class="party-name">${escHtml(data.contractorBusinessName || data.contractorLegalName)}</div>
+      <div class="party-detail">
+        ${escHtml(data.contractorAddress)}<br>
+        ${escHtml(data.contractorEmail)} · ${escHtml(data.contractorPhone)}
+        ${data.contractorLicenseNumber ? `<br>License #${escHtml(data.contractorLicenseNumber)}` : ''}
+        ${data.contractorInsurancePolicy ? `<br>Insurance: ${escHtml(data.contractorInsurancePolicy)}` : ''}
+      </div>
     </div>
-    <div class="party-block">
+    <div class="party-card">
       <div class="party-label">Customer</div>
-      <strong>${escHtml(data.customerName)}</strong><br>
-      ${escHtml(data.customerAddress)}<br>
-      Email: ${escHtml(data.customerEmail)} &nbsp;&nbsp;|&nbsp;&nbsp; Phone: ${escHtml(data.customerPhone)}
+      <div class="party-name">${escHtml(data.customerName)}</div>
+      <div class="party-detail">
+        ${escHtml(data.customerAddress)}<br>
+        ${escHtml(data.customerEmail)} · ${escHtml(data.customerPhone)}
+      </div>
     </div>
   </div>
 
+  <!-- Key Terms Summary -->
+  <div class="key-terms">
+    <div class="term-row"><span class="term-label">Total Contract Price</span><span class="term-value">${formatMoney(data.totalAmount)}</span></div>
+    ${data.depositAmount ? `<div class="term-row"><span class="term-label">Deposit Due</span><span class="term-value">${formatMoney(data.depositAmount)}</span></div>` : ''}
+    <div class="term-row"><span class="term-label">Payment Terms</span><span class="term-value">${escHtml(data.paymentTerms.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()))}</span></div>
+    ${data.startDate ? `<div class="term-row"><span class="term-label">Start Date</span><span class="term-value">${escHtml(data.startDate)}</span></div>` : ''}
+    ${data.completionDate ? `<div class="term-row"><span class="term-label">Completion Date</span><span class="term-value">${escHtml(data.completionDate)}</span></div>` : ''}
+    <div class="term-row"><span class="term-label">Warranty</span><span class="term-value">${data.warrantyPeriodDays} days</span></div>
+    <div class="term-row"><span class="term-label">Governing State</span><span class="term-value">${escHtml(data.governingState)}</span></div>
+  </div>
+
+  <!-- Recitals -->
   <p><strong>RECITALS</strong></p>
   <p>WHEREAS, Contractor is engaged in the business of providing ${escHtml(trade.label.toLowerCase())} services and holds all required licenses and insurance; and</p>
   <p>WHEREAS, Customer desires to engage Contractor to perform certain ${escHtml(trade.label.toLowerCase())} services at the job site described below; and</p>
@@ -862,38 +1074,41 @@ export function generateContractorContractHtml(data: ContractorContractData): st
 
   ${data.additionalTerms ? `<h2>ADDITIONAL TERMS</h2><p>${escHtml(data.additionalTerms)}</p>` : ''}
 
+  ${generateStateDisclosuresHtml(data.governingState, data.contractorLicenseNumber)}
+
   <h2>26. SIGNATURES</h2>
   <p>By signing below, the parties acknowledge that they have read, understand, and agree to all terms and conditions of this Agreement. Each party represents that they have the legal authority to enter into this Agreement.</p>
 
-  <div class="signature-block">
-    <div class="sig-line">
-      <div class="line"><span class="placeholder">/sig_customer/</span></div>
-      <div class="label">Customer Signature</div>
-      <br><br>
-      <div class="line">___________________________</div>
-      <div class="label">Printed Name</div>
-      <br><br>
-      <div class="line">___________________________</div>
-      <div class="label">Date</div>
-    </div>
-    <div class="sig-line">
-      <div class="line"><span class="placeholder">/sig_contractor/</span></div>
-      <div class="label">Contractor Signature</div>
-      <br><br>
-      <div class="line">___________________________</div>
-      <div class="label">Printed Name</div>
-      <br><br>
-      <div class="line">___________________________</div>
-      <div class="label">Date</div>
+  <div class="signature-section">
+    <div class="signature-grid">
+      <div class="sig-block">
+        <div class="sig-line"><span class="placeholder">/sig_customer/</span></div>
+        <div class="sig-label">Customer Signature</div>
+        <div class="sig-spacer"></div>
+        <div class="sig-line"></div>
+        <div class="sig-label">Printed Name</div>
+        <div class="sig-spacer"></div>
+        <div class="sig-line"></div>
+        <div class="sig-label">Date</div>
+      </div>
+      <div class="sig-block">
+        <div class="sig-line"><span class="placeholder">/sig_contractor/</span></div>
+        <div class="sig-label">Contractor Signature</div>
+        <div class="sig-spacer"></div>
+        <div class="sig-line"></div>
+        <div class="sig-label">Printed Name</div>
+        <div class="sig-spacer"></div>
+        <div class="sig-line"></div>
+        <div class="sig-label">Date</div>
+      </div>
     </div>
   </div>
 
-  <div class="disclaimer">
-    <strong>LEGAL DISCLAIMER</strong><br>
-    This service agreement was generated using PropertyFlow HQ's Free Contract Builder tool. PropertyFlow HQ is a software platform, not a law firm. This document is provided as a tool to assist contractors and does not constitute legal advice. No attorney-client relationship is created by use of this tool. The contractor and customer are solely responsible for ensuring this agreement complies with all applicable federal, state, and local laws. Both parties are encouraged to have this agreement reviewed by a licensed attorney before signing.
+  <div class="contract-footer">
+    <p><strong>LEGAL DISCLAIMER</strong></p>
+    <p>This service agreement was generated using PropertyFlow HQ's Contract Builder. PropertyFlow HQ is a software platform, not a law firm. This document does not constitute legal advice. No attorney-client relationship is created. Both parties are encouraged to have this agreement reviewed by a licensed attorney before signing.</p>
+    <p class="brand">Generated by PropertyFlow HQ · propertyflowhq.com</p>
   </div>
-
-  <div class="watermark">PropertyFlow HQ | Free Contract Builder</div>
 
 </body>
 </html>`;
