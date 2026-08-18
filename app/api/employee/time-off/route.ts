@@ -1,3 +1,10 @@
+/**
+ * POST /api/employee/time-off
+ *
+ * Submit a time-off request (PTO, sick, personal, etc.)
+ * Creates a ContractorTimeOff record with status 'pending'.
+ * Notifies the contractor for approval.
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/db/prisma';
@@ -5,116 +12,68 @@ import { prisma } from '@/db/prisma';
 export async function POST(req: NextRequest) {
   try {
     const session = await auth();
-    
     if (!session?.user?.id) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-    }
-
-    const teamMember = await prisma.teamMember.findFirst({
-      where: {
-        userId: session.user.id,
-        status: 'active',
-      },
-      include: {
-        landlord: { select: { id: true } },
-      },
-    });
-
-    if (!teamMember) {
-      return NextResponse.json({ success: false, message: 'Not a team member' }, { status: 403 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await req.json();
-    const { type, startDate, endDate, reason } = body;
+    const { employeeId, contractorId, type, startDate, endDate, hours, reason } = body;
 
-    if (!startDate || !endDate) {
-      return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
+    if (!employeeId || !contractorId || !type || !startDate || !endDate) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Store type in reason field as prefix if provided
-    const reasonWithType = type ? `[${type}] ${reason || ''}`.trim() : reason;
+    // Verify ownership
+    const employee = await prisma.contractorEmployee.findFirst({
+      where: { id: employeeId, userId: session.user.id, status: 'active' },
+      select: { id: true, firstName: true, lastName: true, contractorId: true },
+    });
 
-    const request = await prisma.timeOffRequest.create({
+    if (!employee || employee.contractorId !== contractorId) {
+      return NextResponse.json({ error: 'Not authorized' }, { status: 403 });
+    }
+
+    const db = prisma as any;
+
+    // Create time-off request
+    const request = await db.contractorTimeOff.create({
       data: {
-        teamMemberId: teamMember.id,
-        landlordId: teamMember.landlord.id,
+        employeeId,
+        contractorId,
+        type,
         startDate: new Date(startDate),
         endDate: new Date(endDate),
-        reason: reasonWithType || null,
+        hours: hours || null,
+        reason: reason || null,
         status: 'pending',
       },
     });
 
-    // Extract type from reason for response
-    const typeMatch = request.reason?.match(/^\[(\w+)\]/);
-    const extractedType = typeMatch ? typeMatch[1] : 'vacation';
-    const cleanReason = request.reason?.replace(/^\[\w+\]\s*/, '') || null;
+    // Notify contractor
+    try {
+      const contractor = await prisma.contractorProfile.findUnique({
+        where: { id: contractorId },
+        select: { userId: true },
+      });
 
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Time off request submitted',
-      request: {
-        id: request.id,
-        type: extractedType,
-        startDate: request.startDate.toISOString(),
-        endDate: request.endDate.toISOString(),
-        reason: cleanReason,
-        status: request.status,
-        createdAt: request.createdAt.toISOString(),
-      },
-    });
-  } catch (error) {
-    console.error('Time off request error:', error);
-    return NextResponse.json({ success: false, message: 'Failed to submit request' }, { status: 500 });
-  }
-}
-
-export async function GET(req: NextRequest) {
-  try {
-    const session = await auth();
-    
-    if (!session?.user?.id) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+      if (contractor?.userId) {
+        await db.notification.create({
+          data: {
+            userId: contractor.userId,
+            type: 'reminder',
+            title: `Time-off request from ${employee.firstName} ${employee.lastName}`,
+            message: `${employee.firstName} requested ${type} from ${new Date(startDate).toLocaleDateString()} to ${new Date(endDate).toLocaleDateString()}.${reason ? ` Reason: ${reason}` : ''}`,
+            actionUrl: '/contractor-dashboard/team',
+          },
+        });
+      }
+    } catch {
+      // Non-blocking
     }
 
-    const teamMember = await prisma.teamMember.findFirst({
-      where: {
-        userId: session.user.id,
-        status: 'active',
-      },
-    });
-
-    if (!teamMember) {
-      return NextResponse.json({ success: false, message: 'Not a team member' }, { status: 403 });
-    }
-
-    const requests = await prisma.timeOffRequest.findMany({
-      where: {
-        teamMemberId: teamMember.id,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    return NextResponse.json({ 
-      success: true, 
-      requests: requests.map(r => {
-        const typeMatch = r.reason?.match(/^\[(\w+)\]/);
-        const extractedType = typeMatch ? typeMatch[1] : 'vacation';
-        const cleanReason = r.reason?.replace(/^\[\w+\]\s*/, '') || null;
-        
-        return {
-          id: r.id,
-          type: extractedType,
-          startDate: r.startDate.toISOString(),
-          endDate: r.endDate.toISOString(),
-          reason: cleanReason,
-          status: r.status,
-          createdAt: r.createdAt.toISOString(),
-        };
-      }),
-    });
+    return NextResponse.json({ success: true, id: request.id });
   } catch (error) {
-    console.error('Get time off requests error:', error);
-    return NextResponse.json({ success: false, message: 'Failed to get requests' }, { status: 500 });
+    console.error('POST /api/employee/time-off error:', error);
+    return NextResponse.json({ error: 'Failed to submit request' }, { status: 500 });
   }
 }
