@@ -76,6 +76,9 @@ export function initializeEventHandlers() {
   eventBus.subscribe('contractor.estimate.viewed', handleContractorEstimateViewed);
   eventBus.subscribe('contractor.estimate.accepted', handleContractorEstimateAccepted);
 
+  // Contractor invoice payment automation
+  eventBus.subscribe('contractor.invoice.paid', handleContractorInvoicePaid);
+
   console.log('Event handlers initialized');
 }
 
@@ -1202,5 +1205,35 @@ async function handleContractorEstimateAccepted(event: EventPayload) {
       scheduledFor: new Date(),
       priority: 9,
     });
+  }
+}
+
+// ── Invoice Paid → Auto-Pay Crew ────────────────────────────────────────────
+
+/**
+ * Handle contractor invoice paid — auto-create a payroll run for the crew
+ * members who worked on the linked job.
+ *
+ * Flow:
+ * 1. Check if the invoice is linked to a job (skip if not)
+ * 2. Fetch approved time entries for that job grouped by employee
+ * 3. Calculate each employee's pay (hours × rate, with OT over 40h)
+ * 4. Create a ContractorPayroll + ContractorPaycheck records
+ * 5. Notify the contractor that payroll was auto-generated
+ *
+ * Paychecks are created with status 'pending' — the contractor still needs
+ * to approve/distribute the actual payment (we don't auto-withdraw funds).
+ */
+async function handleContractorInvoicePaid(event: EventPayload) {
+  const { invoiceId, contractorId, jobId, amountPaid } = event.data;
+
+  // Only process if the invoice is linked to a job
+  if (!jobId || !contractorId) return;
+
+  try {
+    const { autoPayrollOnInvoicePaid } = await import('@/lib/services/contractor-automation');
+    await autoPayrollOnInvoicePaid({ invoiceId, contractorId, jobId, amountPaid });
+  } catch (err) {
+    console.error('[handleContractorInvoicePaid] auto-payroll failed:', err);
   }
 }

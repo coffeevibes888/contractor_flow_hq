@@ -53,10 +53,10 @@ export default function StickyTrialBar() {
           <p className='text-xs sm:text-sm font-semibold text-white truncate min-w-0'>
             <span className='hidden sm:inline'>
               {isContractor
-                ? 'Angi & Thumbtack charge hundreds per month. We start at $39 with a '
+                ? 'Angi & Thumbtack charge hundreds per month. We\'re $99/mo unlimited with a '
                 : 'Buildium starts at $55/mo. AppFolio at $280/mo. We start at $39 with a '}
             </span>
-            <span className='text-yellow-300 font-bold'>14-day free trial.</span>
+            <span className='text-yellow-300 font-bold'>14-day free trial — no credit card.</span>
           </p>
         </div>
 

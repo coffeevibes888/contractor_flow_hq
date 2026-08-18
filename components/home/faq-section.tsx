@@ -51,7 +51,7 @@ const pmFaqs = [
 const contractorFaqs = [
   {
     question: 'How much does Property Flow HQ cost for contractors?',
-    answer: 'Plans start at $39/month and every plan includes a 14-day free trial. Your card is collected at checkout but the first charge happens on day 15 — cancel during the trial and you aren\'t billed at all. All plans include unlimited invoicing, job management, and your own branded contractor profile. No per-job fees, ever.',
+    answer: 'It\'s $99/month for everything — unlimited jobs, team members, invoices, customers, inventory, and all features. No tiers, no upsells. We include a 14-day free trial with no credit card required so you can try the full platform risk-free before committing.',
   },
   {
     question: 'How does invoicing and getting paid work?',
@@ -87,7 +87,7 @@ const contractorFaqs = [
   },
   {
     question: 'How do I get started?',
-    answer: 'Sign up in under 2 minutes — no setup fees, no contracts. Add your first job, send an invoice, and set up your contractor profile. Every plan includes a 14-day free trial: card is collected at checkout but you aren\'t charged until day 15. Cancel anytime during the trial.',
+    answer: 'Sign up in under 2 minutes — no credit card required. Add your first job, send an invoice, and set up your contractor profile. You get a full 14-day free trial to explore everything. After the trial, it\'s $99/month. Cancel anytime, no contracts.',
   },
 ];
 

@@ -239,6 +239,18 @@ export function createDatabaseTriggers() {
     },
 
     /**
+     * Emit event when contractor invoice is fully paid
+     */
+    async onContractorInvoicePaid(invoice: any) {
+      await eventBus.emit('contractor.invoice.paid', {
+        invoiceId: invoice.id,
+        contractorId: invoice.contractorId,
+        jobId: invoice.jobId,
+        amountPaid: Number(invoice.total),
+      });
+    },
+
+    /**
      * Emit event when contractor contract is signed
      */
     async onContractorContractSigned(contract: any) {

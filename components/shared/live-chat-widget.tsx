@@ -96,7 +96,7 @@ export default function LiveChatWidget() {
 
     // Pricing questions
     if (lower.includes('pricing') || lower.includes('cost') || lower.includes('price') || lower.includes('plan') || lower.includes('subscription')) {
-      return "We offer simple, transparent pricing:\n\n• **Starter** ($39/mo) - Up to 24 units\n• **Pro** ($99/mo) - Up to 150 units\n• **Enterprise** ($199/mo) - Unlimited units\n\nEvery plan includes a **14-day free trial**. Card is collected at checkout but the first charge isn't until day 15. Cancel anytime during the trial — zero charge. Want to get started?";
+      return "We offer simple, transparent pricing:\n\n**Property Managers:**\n• Starter ($39/mo) - Up to 24 units\n• Pro ($99/mo) - Up to 150 units\n• Enterprise ($199/mo) - Unlimited units\n\n**Contractors:**\n• $99/mo — Everything unlimited. No tiers.\n\nAll plans include a **14-day free trial** with no credit card required. Cancel anytime — zero charge. Want to get started?";
     }
 
     // Tenant screening

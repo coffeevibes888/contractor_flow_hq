@@ -98,92 +98,8 @@ const tiers = [
   },
 ];
 
-const contractorTiers = [
-  {
-    id: 'starter',
-    name: 'Starter',
-    price: 39,
-    yearlyMonthlyPrice: getYearlyMonthlyEquivalent(39),
-    description: 'Perfect for solo contractors & one-man operations just getting organized.',
-    unitLimit: 'Solo operator',
-    icon: Building2,
-    popular: false,
-    comingSoon: false,
-    features: [
-      { name: 'Unlimited job & work order management', included: true },
-      { name: 'Professional invoicing & estimates', included: true },
-      { name: 'Online payment collection (Stripe)', included: true },
-      { name: 'Client & contact management (CRM)', included: true },
-      { name: 'Your own branded subdomain profile', included: true },
-      { name: 'Contractor Marketplace listing', included: true },
-      { name: 'Photo & document uploads per job', included: true },
-      { name: 'Basic job cost tracking', included: true },
-      { name: 'Automated invoice payment reminders', included: true },
-      { name: 'Mobile-friendly — works on any device', included: true },
-    ],
-    cta: 'Start Now',
-    iconBg: 'bg-rose-500/20',
-    iconColor: 'text-rose-300',
-    iconColorLight: 'text-rose-500',
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    price: 99,
-    yearlyMonthlyPrice: getYearlyMonthlyEquivalent(99),
-    description: 'Built for growing crews of 2–20. Run your entire operation from one place.',
-    unitLimit: 'Up to 20 team members',
-    icon: Zap,
-    popular: true,
-    comingSoon: false,
-    features: [
-      { name: 'Everything in Starter', included: true },
-      { name: 'Up to 20 team members', included: true },
-      { name: 'Team scheduling & job assignment', included: true },
-      { name: 'GPS time clock & timesheet approvals', included: true },
-      { name: 'Inventory & equipment tracking', included: true },
-      { name: 'Lead management & pipeline', included: true },
-      { name: 'QuickBooks & accounting sync', included: true },
-      { name: 'Advanced profit & loss reporting', included: true },
-      { name: 'Multi-trade job management', included: true },
-      { name: 'Team Slack-like internal chat', included: true },
-      { name: 'Priority support', included: true },
-    ],
-    cta: 'Start Now',
-    iconBg: 'bg-orange-500/20',
-    iconColor: 'text-orange-300',
-    iconColorLight: 'text-orange-500',
-  },
-  {
-    id: 'enterprise',
-    name: 'Enterprise',
-    price: 199,
-    yearlyMonthlyPrice: getYearlyMonthlyEquivalent(199),
-    description: 'For large contractors & multi-trade companies scaling to 100+ employees.',
-    unitLimit: 'Unlimited team members',
-    icon: Crown,
-    popular: false,
-    comingSoon: false,
-    features: [
-      { name: 'Everything in Pro', included: true },
-      { name: 'Unlimited team members', included: true },
-      { name: 'Payroll processing & direct deposit', included: true },
-      { name: 'Advanced roles, permissions & divisions', included: true },
-      { name: 'Multi-location & multi-trade dashboard', included: true },
-      { name: 'Subcontractor management & payments', included: true },
-      { name: 'Client portal with job status updates', included: true },
-      { name: 'Performance & productivity reports', included: true },
-      { name: 'Custom branding & white-label options', included: true },
-      { name: 'Dedicated account manager', included: true },
-      { name: 'API access & third-party integrations', included: true },
-      { name: 'Priority 24/7 support', included: true },
-    ],
-    cta: 'Start Now',
-    iconBg: 'bg-amber-500/20',
-    iconColor: 'text-amber-300',
-    iconColorLight: 'text-amber-500',
-  },
-];
+// Contractor pricing is handled inline in the component (single-plan layout)
+// No contractorTiers array needed.
 
 export default function PricingSection({ variant = 'pm' }: { variant?: 'pm' | 'contractor' }) {
   const router = useRouter();
@@ -212,24 +128,234 @@ export default function PricingSection({ variant = 'pm' }: { variant?: 'pm' | 'c
     setLoadingTier(null);
   };
 
+  // ── Contractor: single-plan value section ──
+  if (isContractor) {
+    return (
+      <section id="pricing" className="w-full py-20 md:py-28 px-4 relative overflow-hidden scroll-mt-20">
+        <div className="absolute inset-0" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-orange-200/30 rounded-full blur-3xl" />
+
+        <div className="max-w-6xl mx-auto relative z-10">
+          {/* Header */}
+          <div className="text-center space-y-4 mb-14 animate-in fade-in duration-700">
+            <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-slate-900 text-sm font-medium border border-black bg-white">
+              <Sparkles className="h-4 w-4 text-rose-500" />
+              <span className="text-black font-bold">One Plan. Everything Included.</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-black">
+              $99/month. No limits. No surprises.
+            </h2>
+            <p className="text-lg text-slate-700 font-medium max-w-2xl mx-auto">
+              14-day free trial — no credit card required. Cancel anytime.
+            </p>
+          </div>
+
+          {/* Main content: Price hero left + Features right */}
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start">
+            {/* Left — Price card */}
+            <div className="rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border border-slate-700/50 p-8 md:p-10 shadow-2xl sticky top-24">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="rounded-xl bg-orange-500/20 p-3 border border-orange-500/30">
+                  <Zap className="h-6 w-6 text-orange-400" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-white">Unlimited</h3>
+                  <p className="text-sm text-slate-400">Everything for your business</p>
+                </div>
+              </div>
+
+              {/* Price */}
+              <div className="mb-6">
+                {isYearly ? (
+                  <>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-5xl font-black text-white">${getYearlyPrice(99).toFixed(2)}</span>
+                      <span className="text-slate-400 font-semibold">/year</span>
+                    </div>
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className="text-sm line-through text-slate-500">${(99 * 12).toFixed(2)}/yr</span>
+                      <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400">
+                        Save ${((99 * 12) - getYearlyPrice(99)).toFixed(2)}
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-5xl font-black text-white">$99</span>
+                    <span className="text-slate-400 font-semibold">/month</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Billing toggle */}
+              <div className="flex items-center gap-3 mb-8 pb-8 border-b border-slate-700/50">
+                <span className={`text-sm font-semibold ${!isYearly ? 'text-white' : 'text-slate-500'}`}>Monthly</span>
+                <button
+                  onClick={() => setBillingInterval(isYearly ? 'monthly' : 'yearly')}
+                  className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-slate-900 ${
+                    isYearly ? 'bg-gradient-to-r from-orange-500 to-rose-500' : 'bg-slate-600'
+                  }`}
+                  aria-label="Toggle billing interval"
+                >
+                  <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform duration-300 ${isYearly ? 'translate-x-8' : 'translate-x-1'}`} />
+                </button>
+                <span className={`text-sm font-semibold ${isYearly ? 'text-white' : 'text-slate-500'}`}>Yearly</span>
+                {isYearly && (
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400">
+                    Save {YEARLY_DISCOUNT_PERCENT}%
+                  </span>
+                )}
+              </div>
+
+              {/* CTA */}
+              <button
+                onClick={() => handleTierClick('pro')}
+                disabled={loadingTier === 'pro'}
+                className="w-full py-4 px-6 rounded-xl font-bold text-base bg-gradient-to-r from-rose-500 to-orange-500 text-white hover:from-rose-400 hover:to-orange-400 shadow-lg shadow-rose-500/30 hover:shadow-rose-500/50 hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2"
+              >
+                {loadingTier === 'pro' ? (
+                  <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>
+                    Start Free Trial
+                    <ArrowRight className="h-4 w-4" />
+                  </>
+                )}
+              </button>
+
+              <p className="text-center text-xs text-slate-400 mt-4">
+                No credit card required. Cancel anytime.
+              </p>
+
+              {/* Trust badges */}
+              <div className="grid grid-cols-2 gap-3 mt-8">
+                {[
+                  { icon: '🔒', text: 'Bank-level security' },
+                  { icon: '⚡', text: 'Stripe payments' },
+                  { icon: '✓', text: 'Cancel anytime' },
+                  { icon: '🎯', text: 'No contracts' },
+                ].map((badge) => (
+                  <div key={badge.text} className="flex items-center gap-2 text-xs text-slate-400">
+                    <span>{badge.icon}</span>
+                    <span>{badge.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right — Feature categories */}
+            <div className="space-y-8">
+              {[
+                {
+                  category: 'Jobs & Invoicing',
+                  features: ['Unlimited jobs & work orders', 'Professional invoicing & estimates', 'E-sign contracts', 'Online payment collection (Stripe)', 'Automated payment reminders', 'Recurring invoices'],
+                },
+                {
+                  category: 'Team & Scheduling',
+                  features: ['Unlimited team members', 'Team scheduling & dispatch', 'GPS time tracking & timesheets', 'Payroll processing & direct deposit', 'Role-based permissions', 'Team chat'],
+                },
+                {
+                  category: 'Clients & Growth',
+                  features: ['CRM & customer portal', 'Lead management & pipeline', 'Contractor Marketplace listing', 'Branded subdomain profile', 'Marketing campaigns & referrals', 'Review management'],
+                },
+                {
+                  category: 'Operations',
+                  features: ['Inventory & equipment tracking', 'Subcontractor management', 'QuickBooks & accounting sync', 'Advanced reporting & analytics', 'API access & integrations', 'Priority support'],
+                },
+              ].map((group) => (
+                <div key={group.category} className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                  <h4 className="text-sm font-bold uppercase tracking-wider text-rose-600 mb-4">{group.category}</h4>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {group.features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-2.5 text-sm text-slate-700 font-medium">
+                        <div className="mt-0.5 rounded-full bg-emerald-100 p-0.5 shrink-0">
+                          <Check className="h-3.5 w-3.5 text-emerald-600" />
+                        </div>
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Competitor comparison */}
+          <div className="mt-20">
+            <div className="text-center mb-10">
+              <h3 className="text-2xl md:text-3xl font-bold text-black">Why contractors switch to us</h3>
+              <p className="text-slate-600 mt-2">Same tools. Fraction of the price. Zero per-lead fees.</p>
+            </div>
+
+            <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-100 bg-slate-50/80">
+                    <th className="text-left py-4 px-5 font-semibold text-slate-500">Feature</th>
+                    <th className="text-center py-4 px-4 font-bold text-rose-600">PropertyFlow HQ</th>
+                    <th className="text-center py-4 px-4 font-semibold text-slate-500">Angi Leads</th>
+                    <th className="text-center py-4 px-4 font-semibold text-slate-500">Thumbtack</th>
+                    <th className="text-center py-4 px-4 font-semibold text-slate-500">Jobber</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { feature: 'Monthly price', vals: ['$99 flat', '$300+', 'Per lead', '$129+'] },
+                    { feature: 'Cost per job/lead', vals: ['$0', '$15–80+', '$15–50+', '$0'] },
+                    { feature: 'Jobs & invoicing', vals: [true, false, false, true] },
+                    { feature: 'Team scheduling', vals: [true, false, false, true] },
+                    { feature: 'GPS time tracking', vals: [true, false, false, 'extra'] },
+                    { feature: 'Inventory tracking', vals: [true, false, false, 'extra'] },
+                    { feature: 'CRM & customer portal', vals: [true, false, false, 'extra'] },
+                    { feature: 'Branded profile + marketplace', vals: [true, false, false, false] },
+                    { feature: 'PM/Landlord lead access', vals: [true, false, false, false] },
+                    { feature: 'No credit card trial', vals: [true, false, false, false] },
+                  ].map((row, i) => (
+                    <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50/40'}>
+                      <td className="py-3.5 px-5 font-medium text-slate-700">{row.feature}</td>
+                      {row.vals.map((val, j) => (
+                        <td key={j} className="py-3.5 px-4 text-center">
+                          {val === true ? (
+                            <Check className={`h-5 w-5 mx-auto ${j === 0 ? 'text-rose-500' : 'text-emerald-500'}`} />
+                          ) : val === false ? (
+                            <span className="text-slate-300 text-lg">✕</span>
+                          ) : val === 'extra' ? (
+                            <span className="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">Extra $</span>
+                          ) : (
+                            <span className={`font-bold ${j === 0 ? 'text-rose-600' : 'text-slate-700'}`}>{val}</span>
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ── PM: original multi-tier layout (unchanged) ──
   return (
     <section id="pricing" className="w-full py-20 md:py-28 px-4 relative overflow-hidden scroll-mt-20">
       {/* Background effects */}
       <div className="absolute inset-0" />
-      <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] ${isContractor ? 'bg-orange-200/30' : 'bg-violet-500/10'} rounded-full blur-3xl`} />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-violet-500/10 rounded-full blur-3xl" />
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
         <div className="text-center space-y-4 mb-16 animate-in fade-in duration-700">
           <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-slate-900 text-sm font-medium border border-black bg-white">
-            <Sparkles className={`h-4 w-4 ${isContractor ? 'text-rose-500' : 'text-blue-600'}`} />
+            <Sparkles className="h-4 w-4 text-blue-600" />
             <span className='text-black font-bold'>Simple, Transparent Pricing</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-black">
-            {isContractor ? 'Start at Just $39/month. Built for Contractors.' : 'Start at Just $39/month. Scales as You Grow.'}
+            Start at Just $39/month. Scales as You Grow.
           </h2>
           <p className="text-lg text-black font-semibold max-w-2xl mx-auto">
-            {isContractor ? 'Everything you need to run your business — jobs, invoices, team, and more.' : "Finally an Automation Tool that saves you time and money. Let's face it your time is valuable."}
+            Finally an Automation Tool that saves you time and money. Let&apos;s face it your time is valuable.
           </p>
 
           {/* Billing Interval Toggle */}
@@ -259,24 +385,20 @@ export default function PricingSection({ variant = 'pm' }: { variant?: 'pm' | 'c
 
         {/* Pricing Cards */}
         <div className="grid gap-8 lg:grid-cols-3 lg:gap-6 max-w-6xl mx-auto">
-          {(isContractor ? contractorTiers : tiers).map((tier, index) => {
+          {tiers.map((tier, index) => {
             const Icon = tier.icon;
             const isPopular = tier.popular;
 
             return (
               <div
                 key={tier.id}
-                className={`relative group rounded-2xl border shadow-xl p-8 flex flex-col transition-all duration-300 animate-in fade-in slide-in-from-bottom hover:scale-105 ${
-                  isContractor
-                    ? 'bg-gradient-to-br from-orange-50 via-white to-rose-50 border-orange-200/60'
-                    : 'bg-gradient-to-r from-cyan-600 via-blue-500 to-violet-600 border-black shadow-2xl'
-                } ${isPopular ? 'scale-105 lg:scale-110 z-10' : ''}`}
+                className={`relative group rounded-2xl border shadow-xl p-8 flex flex-col transition-all duration-300 animate-in fade-in slide-in-from-bottom hover:scale-105 bg-gradient-to-r from-cyan-600 via-blue-500 to-violet-600 border-black shadow-2xl ${isPopular ? 'scale-105 lg:scale-110 z-10' : ''}`}
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 {/* Popular badge */}
                 {isPopular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
-                    <div className={`bg-gradient-to-r ${isContractor ? 'from-rose-500 to-orange-500 shadow-rose-500/50' : 'from-violet-500 to-purple-500 shadow-violet-500/50'} text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1.5`}>
+                    <div className="bg-gradient-to-r from-violet-500 to-purple-500 shadow-violet-500/50 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
                       <Zap className="h-3 w-3" />
                       MOST POPULAR
                     </div>
@@ -285,76 +407,58 @@ export default function PricingSection({ variant = 'pm' }: { variant?: 'pm' | 'c
 
                 {/* Tier header */}
                 <div className={`flex items-center gap-3 mb-4 ${isPopular ? 'pt-2' : ''}`}>
-                  <div className={`rounded-xl ${tier.iconBg} p-3 border ${isContractor ? 'border-orange-200' : 'border-white/20'}`}>
-                    <Icon className={`h-6 w-6 ${isContractor ? tier.iconColorLight : 'text-white'}`} />
+                  <div className={`rounded-xl ${tier.iconBg} p-3 border border-white/20`}>
+                    <Icon className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h3 className={`text-xl font-bold ${isContractor ? 'text-black' : 'text-white'}`}>{tier.name}</h3>
-                    <p className={`text-xs font-semibold ${isContractor ? 'text-black/60' : 'text-white'}`}>{tier.unitLimit}</p>
+                    <h3 className="text-xl font-bold text-white">{tier.name}</h3>
+                    <p className="text-xs font-semibold text-white">{tier.unitLimit}</p>
                   </div>
                 </div>
 
                 {/* Price */}
                 <div className="mb-4">
-                  {tier.price !== null ? (
-                    isYearly ? (
-                      <>
-                        <div className="flex items-baseline gap-1">
-                          <span className={`text-4xl font-bold ${isContractor ? 'text-black' : 'text-white'}`}>
-                            ${getYearlyPrice(tier.price).toFixed(2)}
-                          </span>
-                          <span className={`font-semibold ${isContractor ? 'text-black/60' : 'text-white'}`}>/year</span>
-                        </div>
-                        <div className="mt-1 flex items-center gap-2">
-                          <span className={`text-sm line-through ${isContractor ? 'text-black/40' : 'text-white/40'}`}>
-                            ${(tier.price * 12).toFixed(2)}/yr
-                          </span>
-                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${isContractor ? 'bg-emerald-100 text-emerald-700' : 'bg-emerald-500/20 text-emerald-300'}`}>
-                            Save ${((tier.price * 12) - getYearlyPrice(tier.price)).toFixed(2)}
-                          </span>
-                        </div>
-                      </>
-                    ) : (
+                  {isYearly ? (
+                    <>
                       <div className="flex items-baseline gap-1">
-                        <span className={`text-4xl font-bold ${isContractor ? 'text-black' : 'text-white'}`}>${tier.price}</span>
-                        <span className={`font-semibold ${isContractor ? 'text-black/60' : 'text-white'}`}>/month</span>
+                        <span className="text-4xl font-bold text-white">
+                          ${getYearlyPrice(tier.price).toFixed(2)}
+                        </span>
+                        <span className="font-semibold text-white">/year</span>
                       </div>
-                    )
+                      <div className="mt-1 flex items-center gap-2">
+                        <span className="text-sm line-through text-white/40">
+                          ${(tier.price * 12).toFixed(2)}/yr
+                        </span>
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">
+                          Save ${((tier.price * 12) - getYearlyPrice(tier.price)).toFixed(2)}
+                        </span>
+                      </div>
+                    </>
                   ) : (
-                    <div className={`text-2xl font-bold ${isContractor ? 'text-black' : 'text-white'}`}>Custom Pricing</div>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-4xl font-bold text-white">${tier.price}</span>
+                      <span className="font-semibold text-white">/month</span>
+                    </div>
                   )}
                 </div>
 
-                <p className={`text-sm font-semibold mb-6 ${isContractor ? 'text-black/70' : 'text-white'}`}>{tier.description}</p>
+                <p className="text-sm font-semibold mb-6 text-white">{tier.description}</p>
 
                 {/* CTA Button */}
                 <button
-                  onClick={() => !tier.comingSoon && handleTierClick(tier.id)}
-                  disabled={loadingTier === tier.id || tier.comingSoon}
+                  onClick={() => handleTierClick(tier.id)}
+                  disabled={loadingTier === tier.id}
                   className={`w-full py-3.5 px-6 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2 mb-8 ${
-                    tier.comingSoon
-                      ? 'bg-slate-700 text-slate-400 cursor-not-allowed'
-                    : isContractor
-                      ? isPopular
-                        ? 'bg-gradient-to-r from-rose-500 to-orange-500 text-white hover:from-rose-400 hover:to-orange-400 shadow-lg shadow-rose-500/30 hover:shadow-rose-500/50 hover:scale-105'
-                        : tier.id === 'enterprise'
-                          ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-400 hover:to-orange-400'
-                          : 'bg-gradient-to-r from-rose-600 to-rose-500 text-white hover:from-rose-500 hover:to-rose-400 shadow-lg shadow-rose-500/20 hover:scale-105'
-                    : isPopular
+                    isPopular
                       ? 'bg-gradient-to-r from-violet-500 to-purple-500 text-white hover:from-violet-400 hover:to-purple-400 shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 hover:scale-105'
                     : tier.id === 'enterprise'
                       ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-400 hover:to-orange-400'
-                    : tier.id === 'starter'
-                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-400 hover:to-cyan-400 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105'
-                      : 'bg-slate-900 text-white hover:bg-slate-800 border border-slate-900'
+                    : 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-400 hover:to-cyan-400 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105'
                   }`}
                 >
                   {loadingTier === tier.id ? (
                     <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  ) : tier.comingSoon ? (
-                    <>
-                      {tier.cta}
-                    </>
                   ) : (
                     <>
                       {tier.cta}
@@ -365,7 +469,7 @@ export default function PricingSection({ variant = 'pm' }: { variant?: 'pm' | 'c
 
                 {/* Features list */}
                 <div className="flex-1">
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-4 ${isContractor ? 'text-black' : 'text-white'}`}>
+                  <p className="text-xs font-bold uppercase tracking-wider mb-4 text-white">
                     What&apos;s included
                   </p>
                   <ul className="space-y-3">
@@ -373,15 +477,11 @@ export default function PricingSection({ variant = 'pm' }: { variant?: 'pm' | 'c
                       <li 
                         key={i} 
                         className={`flex items-start gap-3 text-sm ${
-                          feature.included 
-                            ? isContractor ? 'text-black font-semibold' : 'text-white font-semibold'
-                            : isContractor ? 'text-black/40' : 'text-white/60'
+                          feature.included ? 'text-white font-semibold' : 'text-white/60'
                         }`}
                       >
                         <div className={`mt-0.5 rounded-full p-0.5 ${
-                          feature.included 
-                            ? isContractor ? 'bg-orange-100 text-orange-600' : 'bg-white/20 text-white'
-                            : isContractor ? 'bg-black/5 text-black/30' : 'bg-white/10 text-white/40'
+                          feature.included ? 'bg-white/20 text-white' : 'bg-white/10 text-white/40'
                         }`}>
                           <Check className="h-3.5 w-3.5" />
                         </div>
@@ -395,9 +495,8 @@ export default function PricingSection({ variant = 'pm' }: { variant?: 'pm' | 'c
           })}
         </div>
 
-        {/* ── Trust strip + cancel-anytime row ── */}
+        {/* ── Trust strip ── */}
         <div className="mt-14 flex flex-col items-center gap-6">
-          {/* Cancel anytime / no contract / trial pill */}
           <div className="flex flex-wrap items-center justify-center gap-3">
             {[
               { icon: '✓', text: '14-day free trial' },
@@ -407,11 +506,7 @@ export default function PricingSection({ variant = 'pm' }: { variant?: 'pm' | 'c
             ].map((item) => (
               <span
                 key={item.text}
-                className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-xs font-semibold ${
-                  isContractor
-                    ? 'border-orange-200 bg-orange-50 text-orange-700'
-                    : 'border-cyan-200 bg-cyan-50 text-cyan-700'
-                }`}
+                className="inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-xs font-semibold border-cyan-200 bg-cyan-50 text-cyan-700"
               >
                 <span className="text-emerald-500 font-bold">{item.icon}</span>
                 {item.text}
@@ -419,7 +514,6 @@ export default function PricingSection({ variant = 'pm' }: { variant?: 'pm' | 'c
             ))}
           </div>
 
-          {/* Security / trust badges */}
           <div className="flex flex-wrap items-center justify-center gap-6 py-4 px-6 rounded-2xl border border-slate-200 bg-white shadow-sm w-full max-w-2xl">
             <div className="flex items-center gap-2 text-slate-600">
               <svg className="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
@@ -439,7 +533,6 @@ export default function PricingSection({ variant = 'pm' }: { variant?: 'pm' | 'c
             </div>
           </div>
         </div>
-
       </div>
     </section>
   );

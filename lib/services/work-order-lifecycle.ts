@@ -226,3 +226,106 @@ export const TIMELINE_STEPS: { key: LifecycleStatus; label: string; short: strin
   { key: 'awaiting_approval', label: 'Awaiting Approval', short: 'Review' },
   { key: 'released', label: 'Paid & Complete', short: 'Done' },
 ];
+
+// ── Escrow Release ────────────────────────────────────────────────────────────
+
+/**
+ * Release escrowed funds to a contractor's Stripe Connect account.
+ * Used by both the PM "approve" action and the cron auto-release.
+ *
+ * Handles the case where a contractor hasn't finished Stripe onboarding:
+ * transitions the work order to released anyway (so the PM isn't blocked),
+ * and the payout retries when onboarding completes.
+ */
+export async function releaseFundsForWorkOrder(args: {
+  workOrderId: string;
+  actorUserId: string | null;
+  actorRole: 'landlord' | 'system';
+  note: string;
+}) {
+  const { workOrderId, actorUserId, actorRole, note } = args;
+
+  const wo = await prisma.workOrder.findUnique({
+    where: { id: workOrderId },
+    include: {
+      contractor: {
+        select: {
+          id: true,
+          userId: true,
+          email: true,
+        },
+      },
+    },
+  });
+  if (!wo) throw new Error('Work order not found');
+  if (wo.lifecycleStatus !== 'awaiting_approval') {
+    throw new Error(`Cannot release from status ${wo.lifecycleStatus}`);
+  }
+  if (wo.escrowStatus !== 'funded') {
+    throw new Error('Funds are not held in escrow');
+  }
+
+  // Resolve contractor's Stripe Connect account
+  const profile = wo.contractor?.userId
+    ? await prisma.contractorProfile.findFirst({
+        where: { userId: wo.contractor.userId },
+        select: { stripeConnectAccountId: true, isPaymentReady: true },
+      })
+    : null;
+
+  if (!profile?.isPaymentReady || !profile.stripeConnectAccountId) {
+    // Mark released in DB but flag that payout will be retried by the cron
+    // once the contractor finishes onboarding.
+    await recordTransition({
+      workOrderId,
+      to: 'released',
+      actorUserId,
+      actorRole,
+      note: `${note} (payout pending — contractor not onboarded yet)`,
+      workOrderPatch: {
+        status: 'paid',
+        escrowStatus: 'released',
+        escrowReleasedAt: new Date(),
+        lifecycleApprovedAt: new Date(),
+      },
+    });
+    return { transferred: false, reason: 'contractor_not_onboarded' };
+  }
+
+  const amount = Number(wo.escrowAmount ?? 0);
+  if (amount <= 0) throw new Error('No escrow amount to release');
+
+  // Lazy-import stripe to avoid loading it when the lifecycle service is
+  // used for non-payment operations.
+  const { stripe } = await import('@/lib/stripe');
+
+  const transfer = await stripe.transfers.create({
+    amount: Math.round(amount * 100),
+    currency: 'usd',
+    destination: profile.stripeConnectAccountId,
+    transfer_group: `wo_${workOrderId}`,
+    metadata: {
+      workOrderId,
+      contractorId: wo.contractor!.id,
+      purpose: 'work_order_release',
+    },
+  });
+
+  await recordTransition({
+    workOrderId,
+    to: 'released',
+    actorUserId,
+    actorRole,
+    note,
+    metadata: { transferId: transfer.id, amount },
+    workOrderPatch: {
+      status: 'paid',
+      escrowStatus: 'released',
+      escrowReleasedAt: new Date(),
+      lifecycleApprovedAt: new Date(),
+      stripeTransferId: transfer.id,
+    },
+  });
+
+  return { transferred: true, transferId: transfer.id, amount };
+}

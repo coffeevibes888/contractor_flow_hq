@@ -6,8 +6,6 @@ import { motion } from 'framer-motion';
 import {
   Check,
   Zap,
-  Wrench,
-  Crown,
   ArrowRight,
   Sparkles,
   Shield,
@@ -21,105 +19,20 @@ interface ContractorSubscriptionClientProps {
   userName: string;
 }
 
-const tiers = [
-  {
-    id: 'starter',
-    name: 'Starter',
-    price: 39,
-    description: 'Everything a solo contractor needs — jobs, invoicing, CRM, inventory & equipment.',
-    unitLimit: 'Solo operator',
-    icon: Wrench,
-    popular: false,
-    comingSoon: false,
-    features: [
-      'Unlimited job & work order management',
-      'Professional invoicing & estimates',
-      'Online payment collection (Stripe)',
-      'Client & contact management (CRM)',
-      'Inventory & equipment tracking',
-      'Customer portal & communication history',
-      'Marketing campaigns & referrals',
-      'Your own branded subdomain profile',
-      'Contractor Marketplace listing',
-      'Photo & document uploads per job',
-      'Automated invoice payment reminders',
-      'Mobile-friendly — works on any device',
-    ],
-    iconBg: 'bg-rose-500/20',
-    iconColor: 'text-rose-300',
-    buttonStyle: 'bg-gradient-to-r from-rose-600 to-rose-500 text-white hover:from-rose-500 hover:to-rose-400 shadow-lg shadow-rose-500/20',
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    price: 99,
-    description: 'Everything in Starter plus team management, scheduling & priority support.',
-    unitLimit: 'Up to 20 team members',
-    icon: Zap,
-    popular: true,
-    comingSoon: false,
-    features: [
-      'Everything in Starter',
-      'Up to 20 team members',
-      'Team scheduling & job assignment',
-      'GPS time clock & timesheet approvals',
-      'Team Slack-like internal chat',
-      'QuickBooks & accounting sync',
-      'Advanced profit & loss reporting',
-      'Subcontractor management',
-      'Payroll integration',
-      'Priority support',
-    ],
-    iconBg: 'bg-orange-500/20',
-    iconColor: 'text-orange-300',
-    buttonStyle:
-      'bg-gradient-to-r from-rose-500 to-orange-400 text-white hover:from-rose-400 hover:to-orange-300 shadow-lg shadow-rose-500/30',
-  },
-  {
-    id: 'enterprise',
-    name: 'Enterprise',
-    price: 199,
-    description: 'Unlimited everything with full business operations suite.',
-    unitLimit: 'Unlimited team members',
-    icon: Crown,
-    popular: false,
-    comingSoon: false,
-    features: [
-      'Everything in Pro',
-      'Unlimited team members',
-      'Payroll processing & direct deposit',
-      'Advanced roles, permissions & divisions',
-      'Multi-location & multi-trade dashboard',
-      'Custom branding & white-label options',
-      'Performance & productivity reports',
-      'Dedicated account manager',
-      'API access & third-party integrations',
-      'Priority 24/7 support',
-    ],
-    iconBg: 'bg-amber-500/20',
-    iconColor: 'text-amber-300',
-    buttonStyle:
-      'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-400 hover:to-orange-400 shadow-lg shadow-amber-500/30',
-  },
-];
-
 export default function ContractorSubscriptionClient({
   userName,
 }: ContractorSubscriptionClientProps) {
   const searchParams = useSearchParams();
-  const [loadingTier, setLoadingTier] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const suggestedPlan = searchParams.get('plan');
 
   useEffect(() => {
     if (searchParams.get('canceled') === 'true') {
-      setError('Checkout was canceled. Please select a plan to continue.');
+      setError('Checkout was canceled. Click below to try again.');
     }
   }, [searchParams]);
 
   // Fire Meta Pixel Lead + CompleteRegistration once on mount.
-  // The actual Purchase event is fired server-side from the Stripe webhook.
   useEffect(() => {
     trackMetaEvent('CompleteRegistration', {
       content_name: 'contractor_signup',
@@ -128,44 +41,36 @@ export default function ContractorSubscriptionClient({
     trackMetaEvent('Lead', {
       content_category: 'contractor',
       content_name: 'contractor_trial_started',
-      value: 39,
+      value: 99,
       currency: 'USD',
     });
-    // Reddit equivalents
-    trackRedditEvent('SignUp', {
-      currency: 'USD',
-      value: 39,
-    });
-    trackRedditEvent('Lead', {
-      currency: 'USD',
-      value: 39,
-    });
+    trackRedditEvent('SignUp', { currency: 'USD', value: 99 });
+    trackRedditEvent('Lead', { currency: 'USD', value: 99 });
   }, []);
 
-  const handleSelectPlan = async (tierId: string) => {
-    setLoadingTier(tierId);
+  const handleStartTrial = async () => {
+    setLoading(true);
     setError(null);
 
-    const tierMeta = tiers.find((t) => t.id === tierId);
     trackMetaEvent('InitiateCheckout', {
-      content_ids: tierId,
-      content_name: `contractor_${tierId}`,
+      content_ids: 'pro',
+      content_name: 'contractor_pro',
       content_category: 'contractor_subscription',
-      value: tierMeta?.price ?? 39,
+      value: 99,
       currency: 'USD',
     });
     trackRedditEvent('AddToCart', {
       currency: 'USD',
-      value: tierMeta?.price ?? 39,
+      value: 99,
       itemCount: 1,
-      products: [{ id: tierId, name: `contractor_${tierId}`, category: 'contractor_subscription' }],
+      products: [{ id: 'pro', name: 'contractor_pro', category: 'contractor_subscription' }],
     });
 
     try {
       const response = await fetch('/api/contractor/subscription/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tier: tierId }),
+        body: JSON.stringify({ tier: 'pro' }),
       });
 
       const data = await response.json();
@@ -174,17 +79,17 @@ export default function ContractorSubscriptionClient({
         window.location.href = data.checkoutUrl;
       } else {
         setError(data.message || 'Failed to start checkout. Please try again.');
-        setLoadingTier(null);
+        setLoading(false);
       }
     } catch {
       setError('Something went wrong. Please try again.');
-      setLoadingTier(null);
+      setLoading(false);
     }
   };
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white flex items-center justify-center px-4 py-10">
-      <div className="max-w-5xl w-full space-y-8">
+      <div className="max-w-3xl w-full space-y-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -197,12 +102,10 @@ export default function ContractorSubscriptionClient({
             Welcome, {userName.split(' ')[0]}!
           </div>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-            {suggestedPlan ? 'Review your plan selection' : 'Choose your plan'}
+            Your account is ready
           </h1>
           <p className="text-lg text-slate-400 max-w-xl mx-auto">
-            {suggestedPlan
-              ? 'Take a moment to review all plans. You can upgrade or downgrade anytime.'
-              : '14-day free trial — no charge until day 15. Cancel anytime, no contracts.'}
+            Start your 14-day free trial. No credit card required.
           </p>
         </motion.div>
 
@@ -218,111 +121,88 @@ export default function ContractorSubscriptionClient({
           </motion.div>
         )}
 
-        {/* Pricing Cards */}
+        {/* Single plan card */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="grid gap-6 lg:grid-cols-3"
+          className="rounded-2xl border border-orange-500/40 bg-slate-900/60 backdrop-blur-sm overflow-hidden"
         >
-          {tiers.map((tier, index) => {
-            const Icon = tier.icon;
-            const isPopular = tier.popular;
-            const isLoading = loadingTier === tier.id;
-            const isSuggested = suggestedPlan === tier.id;
+          {/* Card header */}
+          <div className="bg-gradient-to-r from-rose-500/10 to-orange-500/10 border-b border-white/5 px-8 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="rounded-xl bg-orange-500/20 p-2.5 border border-orange-500/30">
+                <Zap className="h-6 w-6 text-orange-400" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white">Unlimited Plan</h2>
+                <p className="text-sm text-slate-400">Everything for your business</p>
+              </div>
+            </div>
+            <div className="flex items-baseline gap-1">
+              <span className="text-4xl font-black text-white">$99</span>
+              <span className="text-slate-400">/month</span>
+            </div>
+          </div>
 
-            return (
-              <motion.div
-                key={tier.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.1 * index }}
-                className={`relative group rounded-2xl border bg-slate-900/60 backdrop-blur-sm p-6 flex flex-col transition-all duration-300 ${
-                  isSuggested
-                    ? 'border-rose-500/70 hover:border-rose-500 ring-2 ring-rose-500/30 scale-105'
-                    : isPopular
-                    ? 'border-orange-500/50 hover:border-orange-500 ring-1 ring-orange-500/20'
-                    : 'border-white/10 hover:border-white/20'
-                }`}
-              >
-                {/* Suggested or Popular badge */}
-                {isSuggested ? (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
-                    <div className="bg-gradient-to-r from-rose-500 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg shadow-rose-500/50 flex items-center gap-1">
-                      <Sparkles className="h-3 w-3" />
-                      YOUR SELECTION
-                    </div>
-                  </div>
-                ) : isPopular ? (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
-                    <div className="bg-gradient-to-r from-rose-500 to-orange-400 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg shadow-rose-500/50 flex items-center gap-1">
-                      <Zap className="h-3 w-3" />
-                      MOST POPULAR
-                    </div>
-                  </div>
-                ) : null}
-
-                {/* Tier header */}
-                <div className={`flex items-center gap-3 mb-3 ${isPopular ? 'pt-2' : ''}`}>
-                  <div className={`rounded-xl ${tier.iconBg} p-2.5 border border-white/10`}>
-                    <Icon className={`h-5 w-5 ${tier.iconColor}`} />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-white">{tier.name}</h3>
-                    <p className="text-xs text-slate-400">{tier.unitLimit}</p>
-                  </div>
-                </div>
-
-                {/* Price */}
-                <div className="mb-3">
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-bold text-white">${tier.price}</span>
-                    <span className="text-slate-400 text-sm">/month</span>
-                  </div>
-                </div>
-
-                <p className="text-sm text-slate-400 mb-4">{tier.description}</p>
-
-                {/* CTA Button */}
-                <button
-                  onClick={() => !tier.comingSoon && handleSelectPlan(tier.id)}
-                  disabled={loadingTier !== null || tier.comingSoon}
-                  className={`w-full py-3 px-4 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2 mb-5 disabled:opacity-50 disabled:cursor-not-allowed ${tier.buttonStyle}`}
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : tier.comingSoon ? (
-                    <>Coming Soon</>
-                  ) : (
-                    <>
-                      Get Started
-                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </>
-                  )}
-                </button>
-
-                {/* Features list */}
-                <div className="flex-1">
+          {/* Features grid */}
+          <div className="px-8 py-8">
+            <div className="grid sm:grid-cols-2 gap-x-8 gap-y-6">
+              {[
+                {
+                  title: 'Jobs & Invoicing',
+                  items: ['Unlimited jobs & work orders', 'Invoicing & estimates', 'E-sign contracts', 'Online payments (Stripe)'],
+                },
+                {
+                  title: 'Team & Scheduling',
+                  items: ['Unlimited team members', 'Scheduling & dispatch', 'GPS time tracking', 'Payroll & direct deposit'],
+                },
+                {
+                  title: 'Clients & Growth',
+                  items: ['CRM & customer portal', 'Lead management & pipeline', 'Marketplace listing', 'Branded subdomain'],
+                },
+                {
+                  title: 'Operations',
+                  items: ['Inventory & equipment', 'Subcontractor management', 'QuickBooks sync', 'API & integrations'],
+                },
+              ].map((group) => (
+                <div key={group.title} className="space-y-2.5">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-orange-400">{group.title}</h4>
                   <ul className="space-y-2">
-                    {tier.features.map((feature, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                        <div
-                          className={`mt-0.5 rounded-full p-0.5 ${
-                            isPopular
-                              ? 'bg-orange-500/20 text-orange-400'
-                              : 'bg-rose-500/20 text-rose-400'
-                          }`}
-                        >
+                    {group.items.map((item) => (
+                      <li key={item} className="flex items-start gap-2 text-sm text-slate-300">
+                        <div className="mt-0.5 rounded-full p-0.5 bg-emerald-500/20 text-emerald-400 shrink-0">
                           <Check className="h-3 w-3" />
                         </div>
-                        <span>{feature}</span>
+                        <span>{item}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
-              </motion.div>
-            );
-          })}
+              ))}
+            </div>
+
+            {/* CTA */}
+            <div className="mt-8 pt-6 border-t border-white/5">
+              <button
+                onClick={handleStartTrial}
+                disabled={loading}
+                className="w-full py-4 px-6 rounded-xl font-bold text-base bg-gradient-to-r from-rose-500 to-orange-400 text-white hover:from-rose-400 hover:to-orange-300 shadow-lg shadow-rose-500/30 hover:shadow-rose-500/50 hover:scale-[1.01] transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    Start 14-Day Free Trial
+                    <ArrowRight className="h-4 w-4" />
+                  </>
+                )}
+              </button>
+              <p className="text-center text-xs text-slate-500 mt-3">
+                No credit card required. Cancel anytime from your dashboard.
+              </p>
+            </div>
+          </div>
         </motion.div>
 
         {/* Trust badges */}
@@ -330,11 +210,11 @@ export default function ContractorSubscriptionClient({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="flex flex-wrap items-center justify-center gap-6 pt-4"
+          className="flex flex-wrap items-center justify-center gap-6 pt-2"
         >
           <div className="flex items-center gap-2 text-sm text-slate-400">
             <Shield className="h-4 w-4 text-emerald-400" />
-            <span>SSL Secured</span>
+            <span>Bank-level encryption</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-slate-400">
             <Check className="h-4 w-4 text-emerald-400" />
@@ -342,7 +222,7 @@ export default function ContractorSubscriptionClient({
           </div>
           <div className="flex items-center gap-2 text-sm text-slate-400">
             <Sparkles className="h-4 w-4 text-emerald-400" />
-            <span>No setup fees</span>
+            <span>No contracts or setup fees</span>
           </div>
         </motion.div>
 

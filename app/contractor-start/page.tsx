@@ -34,14 +34,14 @@ import {
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Run Your Whole Contracting Business — From $39/mo — Property Flow HQ',
+  title: 'Run Your Whole Contracting Business — $99/mo Unlimited — Property Flow HQ',
   description:
-    'Stop paying Angi $300+/mo or Jobber $129+/mo. Pro plans at $99/mo include estimates, invoices, scheduling, GPS crew tracking, inventory and your own branded marketplace profile. Solo plans from $39. No setup fees. Cancel anytime.',
+    'Stop paying Angi $300+/mo or Jobber $129+/mo. $99/mo gets you everything unlimited — estimates, invoices, scheduling, GPS crew tracking, inventory and your own branded marketplace profile. 14-day free trial, no credit card. Cancel anytime.',
   alternates: { canonical: 'https://www.propertyflowhq.com/contractor-start' },
   openGraph: {
-    title: 'Run Your Whole Contracting Business — Pro $99/mo, Solo from $39',
+    title: 'Run Your Whole Contracting Business — $99/mo Unlimited',
     description:
-      'Estimates, invoices, scheduling, GPS crew tracking, inventory, branded marketplace profile. No setup fees. Cancel anytime.',
+      'Estimates, invoices, scheduling, GPS crew tracking, inventory, branded marketplace profile. 14-day free trial, no credit card. Cancel anytime.',
     url: 'https://www.propertyflowhq.com/contractor-start',
   },
   robots: { index: false, follow: true },
@@ -49,17 +49,17 @@ export const metadata: Metadata = {
 
 // ── Comparison data (Pro tier vs competitors — honest like-for-like) ──
 const COMPARISON_ROWS: { feature: string; vals: [string, string, string, string] }[] = [
-  { feature: 'Monthly price (full-feature)', vals: ['$99', '$300+', 'Per lead', '$129+'] },
+  { feature: 'Monthly price', vals: ['$99', '$300+', 'Per lead', '$129+'] },
   { feature: 'Cost per job/lead', vals: ['$0', '$15-80+', '$15-50+', '$0'] },
   { feature: 'Jobs & work orders', vals: ['yes', 'no', 'no', 'yes'] },
   { feature: 'Invoicing & estimates', vals: ['yes', 'no', 'no', 'yes'] },
   { feature: 'CRM & customer portal', vals: ['yes', 'no', 'no', 'extra'] },
   { feature: 'Inventory tracking', vals: ['yes', 'no', 'no', 'extra'] },
-  { feature: 'Team scheduling', vals: ['Pro+', 'no', 'no', 'Pro+'] },
-  { feature: 'GPS time tracking', vals: ['Pro+', 'no', 'no', 'extra'] },
+  { feature: 'Team scheduling', vals: ['yes', 'no', 'no', 'Pro+'] },
+  { feature: 'GPS time tracking', vals: ['yes', 'no', 'no', 'extra'] },
   { feature: 'Branded profile page', vals: ['yes', 'no', 'no', 'no'] },
   { feature: 'PM/Landlord marketplace', vals: ['yes', 'no', 'no', 'no'] },
-  { feature: 'QuickBooks sync', vals: ['Pro+', 'no', 'no', 'extra'] },
+  { feature: 'QuickBooks sync', vals: ['yes', 'no', 'no', 'extra'] },
 ];
 const COMPARISON_COLS = ['Property Flow HQ', 'Angi Leads', 'Thumbtack', 'Jobber'];
 
@@ -78,7 +78,7 @@ const PAIN_POINTS = [
   {
     icon: DollarSign,
     pain: 'Bleeding $300+/mo to Angi for leads',
-    solution: 'Get found by PMs free in our marketplace.',
+    solution: 'Get found by PMs free in our marketplace. $99/mo flat.',
   },
   {
     icon: FolderOpen,
@@ -100,19 +100,19 @@ const PAIN_POINTS = [
 // ── Features (what they actually get) ─────────────────────────────
 // tier marks where each feature unlocks — keeps the page honest.
 const FEATURES = [
-  { icon: ClipboardList, tier: 'Starter', title: 'Estimates → Invoices', desc: 'Send a quote, customer accepts, it auto-converts to a job and invoice. Zero re-typing.' },
-  { icon: FileSignature, tier: 'Starter', title: 'E-Sign Contracts', desc: 'Lock in scope and price legally before you start. Built into every estimate.' },
-  { icon: Globe, tier: 'Starter', title: 'Branded Subdomain', desc: 'yourname.propertyflowhq.com — your logo, portfolio, reviews, lead form.' },
-  { icon: Banknote, tier: 'Starter', title: 'Get Paid Faster', desc: 'ACH, card, or bank transfer. Built on Stripe. Money hits in 1-2 days.' },
-  { icon: Wrench, tier: 'Starter', title: 'Inventory & Equipment', desc: 'Track materials and tools per job. Low-stock alerts. No more empty trucks.' },
-  { icon: CalendarClock, tier: 'Pro', title: 'Scheduling + Dispatch', desc: 'Drag-and-drop calendar. Auto-text reminders. No more double-bookings.' },
-  { icon: Users, tier: 'Pro', title: 'Crew + Subs', desc: 'Up to 20 team members. Assign jobs, approve hours, run payroll-ready reports.' },
-  { icon: MapPin, tier: 'Pro', title: 'GPS Time Tracking', desc: 'Crew clocks in by job site. Geofenced. Timesheets auto-build for payroll.' },
-  { icon: Smartphone, tier: 'All plans', title: 'Mobile-First', desc: 'Built for the truck cab. Quote on-site. Sign on a phone. Photos from the field.' },
+  { icon: ClipboardList, tier: 'All', title: 'Estimates → Invoices', desc: 'Send a quote, customer accepts, it auto-converts to a job and invoice. Zero re-typing.' },
+  { icon: FileSignature, tier: 'All', title: 'E-Sign Contracts', desc: 'Lock in scope and price legally before you start. Built into every estimate.' },
+  { icon: Globe, tier: 'All', title: 'Branded Subdomain', desc: 'yourname.propertyflowhq.com — your logo, portfolio, reviews, lead form.' },
+  { icon: Banknote, tier: 'All', title: 'Get Paid Faster', desc: 'ACH, card, or bank transfer. Built on Stripe. Money hits in 1-2 days.' },
+  { icon: Wrench, tier: 'All', title: 'Inventory & Equipment', desc: 'Track materials and tools per job. Low-stock alerts. No more empty trucks.' },
+  { icon: CalendarClock, tier: 'All', title: 'Scheduling + Dispatch', desc: 'Drag-and-drop calendar. Auto-text reminders. No more double-bookings.' },
+  { icon: Users, tier: 'All', title: 'Crew + Subs', desc: 'Unlimited team members. Assign jobs, approve hours, run payroll-ready reports.' },
+  { icon: MapPin, tier: 'All', title: 'GPS Time Tracking', desc: 'Crew clocks in by job site. Geofenced. Timesheets auto-build for payroll.' },
+  { icon: Smartphone, tier: 'All', title: 'Mobile-First', desc: 'Built for the truck cab. Quote on-site. Sign on a phone. Photos from the field.' },
 ];
 
 const STEPS = [
-  { n: '01', title: 'Sign up free', desc: 'Email + password. No card. 60 seconds to your dashboard.' },
+  { n: '01', title: 'Sign up free', desc: 'Email + password. No credit card. 60 seconds to your dashboard.' },
   { n: '02', title: 'Add services + crew', desc: 'Set your pricing, invite your team, connect your bank for payments.' },
   { n: '03', title: 'Send your first job', desc: 'Estimate → e-sign → schedule → invoice → paid. All in one flow.' },
 ];
@@ -126,7 +126,7 @@ const TESTIMONIALS = [
     metric: '$300/mo saved',
   },
   {
-    quote: "GPS time tracking alone paid for it. I caught 4 hours of phantom labor my first week. The whole platform is $40.",
+    quote: "GPS time tracking alone paid for it. I caught 4 hours of phantom labor my first week. The whole platform is $99 — no-brainer.",
     name: 'Diana R.',
     role: 'HVAC Owner-Operator',
     location: 'Phoenix, AZ',
@@ -143,32 +143,32 @@ const TESTIMONIALS = [
 
 const FAQS = [
   {
-    q: 'What\'s the difference between Starter, Pro, and Enterprise?',
-    a: 'Starter ($39/mo) is for solo operators — jobs, invoicing, e-sign contracts, CRM, inventory & equipment tracking, and your branded marketplace profile. Pro ($99/mo) adds team scheduling, GPS time tracking, team chat, QuickBooks sync, and up to 20 crew members — most contractors with a team start here. Enterprise ($199/mo) is for multi-trade companies with unlimited team, payroll, custom branding, and API access.',
+    q: 'What do I get for $99/month?',
+    a: 'Everything. Unlimited jobs, team members, invoices, customers, inventory, equipment, leads, scheduling, GPS time tracking, payroll, subcontractor management, QuickBooks sync, e-sign contracts, custom branding, API access, and priority support. One plan, no tiers, no limits.',
   },
   {
     q: 'Is there really no per-job or per-lead fee?',
-    a: 'Correct. Flat monthly subscription — no per-job, per-lead, or per-invoice fees. Angi and Thumbtack charge $15-80+ for every lead whether you win it or not. We don\'t. We make money on the subscription, not by taxing your jobs.',
+    a: 'Correct. Flat $99/month — no per-job, per-lead, or per-invoice fees. Angi and Thumbtack charge $15-80+ for every lead whether you win it or not. We don\'t. We make money on the subscription, not by taxing your jobs.',
   },
   {
     q: 'How is this different from Jobber or Housecall Pro?',
-    a: 'Same core tools (jobs, invoices, scheduling, GPS, time tracking) at a fraction of the price — Pro is $99/mo vs Jobber\'s $129+ Connect (and Jobber charges extra for time tracking and inventory). Plus we include a public marketplace where property managers and landlords actively hire contractors. Jobber doesn\'t send you any leads. We do.',
+    a: 'Same core tools (jobs, invoices, scheduling, GPS, time tracking) at a lower price — $99/mo vs Jobber\'s $129+ Connect (and Jobber charges extra for time tracking and inventory). Plus we include a public marketplace where property managers and landlords actively hire contractors. Jobber doesn\'t send you any leads. We do.',
   },
   {
-    q: 'Do I need to pay to get into the marketplace?',
-    a: 'No. Every contractor on any paid plan gets a free profile in our marketplace and a branded subdomain (yourname.propertyflowhq.com). PMs and landlords on our platform browse and hire directly — no per-lead charges.',
+    q: 'Do I need a credit card to start the trial?',
+    a: 'No. Sign up with just your email — no credit card required for the 14-day trial. You get full access to every feature. After 14 days, add a payment method to continue at $99/month.',
   },
   {
     q: 'Can my crew use it on their phones?',
-    a: 'Yes. The whole app is mobile-first. Crew clocks in by GPS (Pro plan), uploads job photos, and sees their schedule from any phone. Works in the browser — no app store install needed.',
+    a: 'Yes. The whole app is mobile-first. Crew clocks in by GPS, uploads job photos, and sees their schedule from any phone. Works in the browser — no app store install needed.',
   },
   {
     q: 'How does cancellation work?',
     a: 'You can cancel any time from your dashboard. We don\'t do auto-renew traps — you control your subscription, and your account simply pauses if you cancel. No long-term contract, no early-termination fees.',
   },
   {
-    q: 'Can I switch between plans?',
-    a: 'Yes, anytime. Start on Starter, upgrade to Pro when you hire your first crew member, drop back down if you go solo again. Prorated automatically.',
+    q: 'Do I need to pay to get into the marketplace?',
+    a: 'No. Every subscriber gets a free profile in our marketplace and a branded subdomain (yourname.propertyflowhq.com). PMs and landlords on our platform browse and hire directly — no per-lead charges.',
   },
 ];
 
@@ -176,15 +176,15 @@ export default async function ContractorLandingPage() {
   const session = await auth();
 
   const ctaUrl = session?.user
-    ? '/onboarding/contractor/subscription?plan=starter'
-    : '/sign-up?role=contractor&plan=starter&interval=monthly&skipOnboarding=true';
+    ? '/onboarding/contractor/subscription?plan=pro'
+    : '/sign-up?role=contractor&plan=pro&interval=monthly&skipOnboarding=true';
 
   return (
     <main className='min-h-screen bg-white text-slate-900 antialiased'>
       <MetaViewContent
         contentName='contractor_landing_start'
         contentCategory='contractor'
-        value={39}
+        value={99}
       />
 
       {/* ────────── HEADER ────────── */}
@@ -223,11 +223,11 @@ export default async function ContractorLandingPage() {
               <h1 className='text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]'>
                 <span className='block bg-gradient-to-r from-rose-600 to-rose-500 bg-clip-text text-transparent'>Run Your</span>
                 <span className='block bg-gradient-to-r from-rose-500 to-orange-400 bg-clip-text text-transparent'>Entire Business.</span>
-                <span className='block bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent'>From $39/Mo.</span>
+                <span className='block bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent'>$99/mo. Unlimited.</span>
               </h1>
 
               <p className='text-base md:text-lg text-slate-600 leading-relaxed max-w-lg mx-auto md:mx-0'>
-                Estimates, invoices, scheduling, GPS crew tracking, inventory, and your own branded marketplace profile. Solo plans start at <span className='font-semibold text-slate-900'>$39/mo</span>, full crew tools on <span className='font-semibold text-slate-900'>Pro at $99/mo</span> — still less than Jobber.
+                Estimates, invoices, scheduling, GPS crew tracking, inventory, and your own branded marketplace profile. One plan, everything unlimited at <span className='font-semibold text-slate-900'>$99/mo</span> — less than Jobber, no per-lead fees. 14-day free trial, no credit card.
               </p>
 
               <div className='flex flex-col sm:flex-row gap-3 justify-center md:justify-start items-center pt-1'>
@@ -447,8 +447,7 @@ export default async function ContractorLandingPage() {
             {FEATURES.map((f) => {
               const Icon = f.icon;
               const tierStyle =
-                f.tier === 'Starter' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                  f.tier === 'Pro' ? 'bg-orange-50 text-orange-700 border-orange-200' :
+                f.tier === 'All' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
                     'bg-slate-50 text-slate-600 border-slate-200';
               return (
                 <div
@@ -608,155 +607,137 @@ export default async function ContractorLandingPage() {
         </div>
       </section> */}
 
-      {/* ────────── PRICING ANCHOR — 3 tiers, honest ────────── */}
+      {/* ────────── PRICING — Single plan value showcase ────────── */}
       <section
         id='pricing'
-        className='py-16 md:py-24 px-6 bg-linear-to-r from-red-400 via-orange-300 to-amber-500 text-slate-900 relative overflow-hidden'
+        className='py-16 md:py-24 px-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative overflow-hidden'
       >
-        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-white/20 rounded-full blur-3xl pointer-events-none' />
+        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-orange-500/10 rounded-full blur-3xl pointer-events-none' />
         <div className='relative max-w-6xl mx-auto'>
-          <div className='text-center max-w-2xl mx-auto space-y-3 mb-12'>
-            <span className='inline-block text-xs font-bold tracking-widest text-rose-900 uppercase'>
+          {/* Header */}
+          <div className='text-center max-w-2xl mx-auto space-y-3 mb-14'>
+            <span className='inline-block text-xs font-bold tracking-widest text-orange-400 uppercase'>
               Simple Pricing
             </span>
-            <h2 className='text-3xl md:text-5xl font-bold text-slate-900'>
-              Pick your plan.{' '}
-              <span className='bg-gradient-to-r from-rose-700 to-orange-700 bg-clip-text text-transparent'>
-                No setup fees. Cancel anytime.
-              </span>
+            <h2 className='text-3xl md:text-5xl font-bold text-white'>
+              One plan. Everything unlimited.
             </h2>
-            <p className='text-slate-800 font-medium'>
-              No per-lead fees. No contracts. Cancel from your dashboard anytime.
+            <p className='text-slate-400 font-medium'>
+              No tiers to compare. No features locked behind upgrades. No credit card to start.
             </p>
           </div>
 
-          <div className='grid gap-5 md:grid-cols-3 max-w-5xl mx-auto'>
-            {/* Starter */}
-            <div className='rounded-2xl bg-white/70 backdrop-blur-sm border border-white/80 p-7 flex flex-col shadow-xl'>
-              <div className='space-y-1 mb-5'>
-                <h3 className='text-xl font-bold text-slate-900'>Starter</h3>
-                <p className='text-xs text-rose-700 uppercase tracking-wider font-semibold'>Solo operator</p>
+          {/* Two-column: Price left, Features right */}
+          <div className='grid md:grid-cols-5 gap-8 lg:gap-12 items-start max-w-5xl mx-auto'>
+            {/* Left — Price card (spans 2 cols) */}
+            <div className='md:col-span-2 rounded-2xl bg-gradient-to-br from-white/[0.08] to-white/[0.03] border border-white/10 p-8 backdrop-blur-sm'>
+              <div className='flex items-center gap-2 mb-6'>
+                <div className='rounded-lg bg-orange-500/20 p-2'>
+                  <Zap className='h-5 w-5 text-orange-400' />
+                </div>
+                <span className='text-lg font-bold text-white'>Unlimited Plan</span>
               </div>
-              <div className='flex items-baseline gap-1 mb-1'>
-                <span className='text-5xl font-black text-slate-900'>$39</span>
-                <span className='text-slate-600 text-sm'>/mo</span>
-              </div>
-              <p className='text-xs text-slate-600 mb-5'>Everything a solo contractor needs</p>
 
-              <ul className='space-y-2 text-sm flex-1'>
-                {[
-                  'Unlimited jobs & work orders',
-                  'Invoicing, estimates & e-sign contracts',
-                  'Client CRM & customer portal',
-                  'Inventory & equipment tracking',
-                  'Marketing campaigns & referrals',
-                  'Branded subdomain + marketplace profile',
-                  'Stripe payment collection',
-                  'Mobile-first — works on any phone',
-                ].map((item) => (
-                  <li key={item} className='flex items-start gap-2 text-slate-700'>
-                    <CheckCircle2 className='h-4 w-4 text-emerald-600 shrink-0 mt-0.5' />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className='flex items-baseline gap-1 mb-2'>
+                <span className='text-5xl font-black bg-gradient-to-r from-rose-400 to-orange-400 bg-clip-text text-transparent'>$99</span>
+                <span className='text-slate-400 text-sm font-medium'>/month</span>
+              </div>
+              <p className='text-sm text-slate-400 mb-8'>14-day free trial. No credit card required.</p>
 
               <Link
                 href={ctaUrl}
-                className='mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold px-5 py-3 text-sm transition-all'
+                className='w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-500 to-orange-400 hover:from-rose-400 hover:to-orange-300 text-white font-bold px-5 py-3.5 text-sm shadow-lg shadow-rose-500/30 transition-all hover:scale-[1.02]'
               >
-                Get Started <ArrowRight className='h-4 w-4' />
+                Start Free Trial <ArrowRight className='h-4 w-4' />
               </Link>
+
+              <div className='mt-8 pt-6 border-t border-white/10 grid grid-cols-2 gap-3'>
+                {[
+                  { icon: '🔒', text: 'Bank-level security' },
+                  { icon: '⚡', text: 'Stripe payments' },
+                  { icon: '✓', text: 'Cancel anytime' },
+                  { icon: '🎯', text: 'No contracts' },
+                ].map((badge) => (
+                  <div key={badge.text} className='flex items-center gap-2 text-xs text-slate-400'>
+                    <span>{badge.icon}</span>
+                    <span>{badge.text}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Pro — highlighted */}
-            <div className='relative rounded-2xl bg-white border-2 border-rose-500 p-7 flex flex-col shadow-2xl shadow-rose-500/30 md:scale-105'>
-              <span className='absolute -top-3 left-1/2 -translate-x-1/2 inline-block bg-gradient-to-r from-rose-500 to-orange-400 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg'>
-                Most Popular
-              </span>
-              <div className='space-y-1 mb-5'>
-                <h3 className='text-xl font-bold text-slate-900'>Pro</h3>
-                <p className='text-xs text-rose-700 uppercase tracking-wider font-semibold'>Up to 20 team members</p>
-              </div>
-              <div className='flex items-baseline gap-1 mb-1'>
-                <span className='text-5xl font-black bg-gradient-to-r from-rose-600 to-orange-500 bg-clip-text text-transparent'>$99</span>
-                <span className='text-slate-600 text-sm'>/mo</span>
-              </div>
-              <p className='text-xs text-slate-600 mb-5'>For growing crews with employees</p>
-
-              <ul className='space-y-2 text-sm flex-1'>
-                {[
-                  { label: 'Everything in Starter', strong: true },
-                  { label: 'Up to 20 team members' },
-                  { label: 'Team scheduling & dispatch' },
-                  { label: 'GPS time tracking + timesheets' },
-                  { label: 'QuickBooks two-way sync' },
-                  { label: 'Standard financial reports' },
-                  { label: 'Phone + priority support' },
-                ].map((item) => (
-                  <li key={item.label} className={`flex items-start gap-2 ${item.strong ? 'text-rose-700 font-bold' : 'text-slate-700'}`}>
-                    <CheckCircle2 className='h-4 w-4 text-emerald-600 shrink-0 mt-0.5' />
-                    <span>{item.label}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <Link
-                href={session?.user
-                  ? '/onboarding/contractor/subscription?plan=pro'
-                  : '/sign-up?role=contractor&plan=pro&interval=monthly&skipOnboarding=true'}
-                className='mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-rose-500 to-orange-400 hover:from-rose-600 hover:to-orange-500 text-white font-bold px-5 py-3 text-sm shadow-lg shadow-rose-500/30 transition-all hover:scale-[1.02]'
-              >
-                Start Pro Free <ArrowRight className='h-4 w-4' />
-              </Link>
-            </div>
-
-            {/* Enterprise */}
-            <div className='rounded-2xl bg-white/70 backdrop-blur-sm border border-white/80 p-7 flex flex-col shadow-xl'>
-              <div className='space-y-1 mb-5'>
-                <h3 className='text-xl font-bold text-slate-900'>Enterprise</h3>
-                <p className='text-xs text-rose-700 uppercase tracking-wider font-semibold'>Unlimited team</p>
-              </div>
-              <div className='flex items-baseline gap-1 mb-1'>
-                <span className='text-5xl font-black text-slate-900'>$199</span>
-                <span className='text-slate-600 text-sm'>/mo</span>
-              </div>
-              <p className='text-xs text-slate-600 mb-5'>Multi-trade companies, 100+ employees</p>
-
-              <ul className='space-y-2 text-sm flex-1'>
-                {[
-                  { label: 'Everything in Pro', strong: true },
-                  { label: 'Unlimited team members' },
-                  { label: 'Payroll processing & direct deposit' },
-                  { label: 'Multi-location dashboard' },
-                  { label: 'Advanced roles & permissions' },
-                  { label: 'White-label client portal' },
-                  { label: 'API & 3rd-party integrations' },
-                  { label: 'Dedicated account manager' },
-                  { label: '24/7 priority support' },
-                ].map((item) => (
-                  <li key={item.label} className={`flex items-start gap-2 ${item.strong ? 'text-rose-700 font-bold' : 'text-slate-700'}`}>
-                    <CheckCircle2 className='h-4 w-4 text-emerald-600 shrink-0 mt-0.5' />
-                    <span>{item.label}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <Link
-                href={session?.user
-                  ? '/onboarding/contractor/subscription?plan=enterprise'
-                  : '/sign-up?role=contractor&plan=enterprise&interval=monthly&skipOnboarding=true'}
-                className='mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold px-5 py-3 text-sm transition-all'
-              >
-                Start Enterprise <ArrowRight className='h-4 w-4' />
-              </Link>
+            {/* Right — Feature categories (spans 3 cols) */}
+            <div className='md:col-span-3 grid sm:grid-cols-2 gap-6'>
+              {[
+                {
+                  title: 'Jobs & Invoicing',
+                  features: ['Unlimited jobs & work orders', 'Invoicing & estimates', 'E-sign contracts', 'Online payments (Stripe)', 'Auto payment reminders', 'Recurring invoices'],
+                },
+                {
+                  title: 'Team & Scheduling',
+                  features: ['Unlimited team members', 'Scheduling & dispatch', 'GPS time tracking', 'Timesheet approvals', 'Payroll & direct deposit', 'Team chat'],
+                },
+                {
+                  title: 'Clients & Growth',
+                  features: ['CRM & customer portal', 'Lead pipeline', 'Marketplace listing', 'Branded subdomain', 'Marketing & referrals', 'Review management'],
+                },
+                {
+                  title: 'Operations',
+                  features: ['Inventory tracking', 'Equipment management', 'Subcontractor payments', 'QuickBooks sync', 'Reporting & analytics', 'API & integrations'],
+                },
+              ].map((group) => (
+                <div key={group.title} className='space-y-3'>
+                  <h4 className='text-xs font-bold uppercase tracking-wider text-orange-400'>{group.title}</h4>
+                  <ul className='space-y-2'>
+                    {group.features.map((f) => (
+                      <li key={f} className='flex items-start gap-2 text-sm text-slate-300'>
+                        <CheckCircle2 className='h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5' />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
           </div>
 
-          <p className='text-center text-sm text-slate-800 font-medium mt-8 flex items-center justify-center gap-2'>
-            <CreditCard className='h-3.5 w-3.5' />
-            14-day free trial
-          </p>
+          {/* Competitor comparison */}
+          <div className='mt-16 max-w-4xl mx-auto'>
+            <h3 className='text-center text-xl md:text-2xl font-bold text-white mb-8'>
+              Why contractors switch from Angi, Thumbtack & Jobber
+            </h3>
+            <div className='overflow-x-auto rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-sm'>
+              <table className='w-full text-sm'>
+                <thead>
+                  <tr className='border-b border-white/10'>
+                    <th className='text-left py-3.5 px-4 text-slate-400 font-medium'>Feature</th>
+                    <th className='text-center py-3.5 px-3 text-orange-400 font-bold'>PropertyFlow</th>
+                    <th className='text-center py-3.5 px-3 text-slate-500 font-medium'>Angi</th>
+                    <th className='text-center py-3.5 px-3 text-slate-500 font-medium'>Thumbtack</th>
+                    <th className='text-center py-3.5 px-3 text-slate-500 font-medium'>Jobber</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {COMPARISON_ROWS.map((row, i) => (
+                    <tr key={i} className={i % 2 === 0 ? '' : 'bg-white/[0.02]'}>
+                      <td className='py-3 px-4 text-slate-300 font-medium'>{row.feature}</td>
+                      {row.vals.map((val, j) => (
+                        <td key={j} className='py-3 px-3 text-center'>
+                          {val === 'yes' ? (
+                            <CheckCircle2 className={`h-4 w-4 mx-auto ${j === 0 ? 'text-orange-400' : 'text-emerald-400'}`} />
+                          ) : val === 'no' ? (
+                            <X className='h-4 w-4 mx-auto text-slate-600' />
+                          ) : (
+                            <span className={`text-xs font-bold ${j === 0 ? 'text-orange-400' : 'text-slate-400'}`}>{val}</span>
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -803,7 +784,7 @@ export default async function ContractorLandingPage() {
             Ready to run your business like a pro?
           </h2>
           <p className='text-white/90 text-lg max-w-xl mx-auto'>
-            Join the contractors booking more jobs and getting paid faster. Plans from $39/mo. Pro at $99 — still less than Jobber.
+            Join the contractors booking more jobs and getting paid faster. $99/mo unlimited. 14-day free trial, no credit card.
           </p>
           <Link
             href={ctaUrl}

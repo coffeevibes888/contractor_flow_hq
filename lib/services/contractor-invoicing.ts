@@ -135,9 +135,11 @@ export class ContractorInvoicingService {
   }
 
   /**
-   * Send invoice to customer via email
+   * Send invoice to customer via email.
+   * @param invoiceId - The invoice ID
+   * @param options.skipDraftCheck - If true, automatically finalize a draft invoice before sending (used by automation)
    */
-  static async sendInvoice(invoiceId: string) {
+  static async sendInvoice(invoiceId: string, options?: { skipDraftCheck?: boolean }) {
     const invoice = await prisma.contractorInvoice.findUnique({
       where: { id: invoiceId },
       include: {
@@ -157,7 +159,15 @@ export class ContractorInvoicingService {
     }
 
     if (invoice.status === 'draft') {
-      throw new Error('Cannot send draft invoice. Please finalize it first.');
+      if (options?.skipDraftCheck) {
+        // Auto-finalize for programmatic callers (e.g., automation)
+        await prisma.contractorInvoice.update({
+          where: { id: invoiceId },
+          data: { status: 'pending' },
+        });
+      } else {
+        throw new Error('Cannot send draft invoice. Please finalize it first.');
+      }
     }
 
     // Get customer email
@@ -249,6 +259,22 @@ export class ContractorInvoicingService {
         },
       }),
     ]);
+
+    // Emit event when invoice is fully paid — drives downstream automation
+    // (e.g., auto-pay crew members who worked on the linked job)
+    if (newStatus === 'paid' && invoice.status !== 'paid') {
+      try {
+        const { eventBus } = await import('@/lib/event-system');
+        await eventBus.emit('contractor.invoice.paid', {
+          invoiceId: invoice.id,
+          contractorId: invoice.contractorId,
+          jobId: invoice.jobId,
+          amountPaid: Number(invoice.total),
+        });
+      } catch (err) {
+        console.error('[recordPayment] Failed to emit contractor.invoice.paid event:', err);
+      }
+    }
 
     return result[1]; // Return updated invoice
   }

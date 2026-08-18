@@ -17,10 +17,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/db/prisma';
 import { auth } from '@/auth';
-import { stripe } from '@/lib/stripe';
 import {
   computeApprovalDeadline,
   recordTransition,
+  releaseFundsForWorkOrder,
 } from '@/lib/services/work-order-lifecycle';
 
 type Action = 'schedule' | 'start_work' | 'mark_complete' | 'approve' | 'cancel';
@@ -210,99 +210,4 @@ export async function POST(
   }
 }
 
-/**
- * Shared release helper - used by approve and by the cron auto-release.
- * Transfers funds from the platform balance to the contractor's connected
- * account and transitions the work order to 'released'.
- */
-export async function releaseFundsForWorkOrder(args: {
-  workOrderId: string;
-  actorUserId: string | null;
-  actorRole: 'landlord' | 'system';
-  note: string;
-}) {
-  const { workOrderId, actorUserId, actorRole, note } = args;
-
-  const wo = await prisma.workOrder.findUnique({
-    where: { id: workOrderId },
-    include: {
-      contractor: {
-        select: {
-          id: true,
-          userId: true,
-          email: true,
-        },
-      },
-    },
-  });
-  if (!wo) throw new Error('Work order not found');
-  if (wo.lifecycleStatus !== 'awaiting_approval') {
-    throw new Error(`Cannot release from status ${wo.lifecycleStatus}`);
-  }
-  if (wo.escrowStatus !== 'funded') {
-    throw new Error('Funds are not held in escrow');
-  }
-
-  // Resolve contractor's Stripe Connect account
-  const profile = wo.contractor?.userId
-    ? await prisma.contractorProfile.findFirst({
-        where: { userId: wo.contractor.userId },
-        select: { stripeConnectAccountId: true, isPaymentReady: true },
-      })
-    : null;
-
-  if (!profile?.isPaymentReady || !profile.stripeConnectAccountId) {
-    // Mark released in DB but flag that payout will be retried by the cron
-    // once the contractor finishes onboarding. Funds remain in platform
-    // balance until then. This avoids blocking the PM forever.
-    await recordTransition({
-      workOrderId,
-      to: 'released',
-      actorUserId,
-      actorRole,
-      note: `${note} (payout pending — contractor not onboarded yet)`,
-      workOrderPatch: {
-        status: 'paid',
-        escrowStatus: 'released',
-        escrowReleasedAt: new Date(),
-        lifecycleApprovedAt: new Date(),
-      },
-    });
-    return { transferred: false, reason: 'contractor_not_onboarded' };
-  }
-
-  // Net amount to send: full bid amount (platform fee already collected
-  // separately if applicable; current model is a $1 flat fee on the PM).
-  const amount = Number(wo.escrowAmount ?? 0);
-  if (amount <= 0) throw new Error('No escrow amount to release');
-
-  const transfer = await stripe.transfers.create({
-    amount: Math.round(amount * 100),
-    currency: 'usd',
-    destination: profile.stripeConnectAccountId,
-    transfer_group: `wo_${workOrderId}`,
-    metadata: {
-      workOrderId,
-      contractorId: wo.contractor!.id,
-      purpose: 'work_order_release',
-    },
-  });
-
-  await recordTransition({
-    workOrderId,
-    to: 'released',
-    actorUserId,
-    actorRole,
-    note,
-    metadata: { transferId: transfer.id, amount },
-    workOrderPatch: {
-      status: 'paid',
-      escrowStatus: 'released',
-      escrowReleasedAt: new Date(),
-      lifecycleApprovedAt: new Date(),
-      stripeTransferId: transfer.id,
-    },
-  });
-
-  return { transferred: true, transferId: transfer.id, amount };
-}
+// releaseFundsForWorkOrder is now imported from '@/lib/services/work-order-lifecycle'

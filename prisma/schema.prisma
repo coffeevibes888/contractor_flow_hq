@@ -4120,6 +4120,11 @@ model ContractorProfile {
   cancellationPolicy    String? // 'flexible', 'moderate', 'strict'
   cancellationHours     Int      @default(24)
 
+  // Automation Settings
+  autoSendInvoiceOnComplete Boolean @default(false) // Auto-send invoice to customer when job is completed
+  autoCreatePoOnSchedule    Boolean @default(false) // Auto-create purchase orders for materials when job is scheduled
+  autoAssignCrew            Boolean @default(false) // Auto-assign crew based on skills & availability
+
   // Calendar Integration
   googleCalendarToken  String?
   googleCalendarId     String?

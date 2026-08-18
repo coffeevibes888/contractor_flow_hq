@@ -19,12 +19,12 @@ const StickyTrialBar = dynamic(() => import('@/components/home/sticky-trial-bar'
 export const metadata: Metadata = {
   title: 'Property Flow HQ for Contractors — Run Your Entire Business, One Platform',
   description:
-    'Jobs, invoices, leads, team scheduling, inventory, payroll, and your own branded marketplace profile — all in one platform built for contractors. Starting at $39/month.',
+    'Jobs, invoices, leads, team scheduling, inventory, payroll, and your own branded marketplace profile — all in one platform built for contractors. $99/month, everything unlimited. 14-day free trial, no credit card.',
   alternates: { canonical: 'https://www.propertyflowhq.com/contractor' },
   openGraph: {
     title: 'Property Flow HQ for Contractors',
     description:
-      'Run your entire business from one platform. Estimates, invoices, scheduling, crew, and payments.',
+      'Run your entire business from one platform. $99/month unlimited. 14-day free trial, no credit card.',
     url: 'https://www.propertyflowhq.com/contractor',
   },
 };

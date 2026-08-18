@@ -1,17 +1,14 @@
 /**
  * Contractor Subscription Tiers Configuration
  *
- * PRICING MODEL (updated to compete with Jobber/Housecall Pro):
- * - Starter:    $39/month  (yearly: 20% discount)
- * - Pro:        $99/month  (yearly: 20% discount)
- * - Enterprise: $199/month (yearly: 20% discount)
+ * PRICING MODEL (simplified — single tier, everything unlimited):
+ * - Unlimited: $99/month (yearly: 20% discount)
  *
- * 14-day free trial on every plan. Card is collected at checkout but
- * the first charge happens on day 15. Cancel anytime.
+ * 14-day free trial, NO credit card required. Cancel anytime.
  *
- * Previous pricing ($19.99 / $39.99 / $79.99) signaled "hobbyist tool" to
- * professional contractors and didn't reflect the actual value of the
- * full-stack lead pipeline + automation + marketplace + CRM bundle.
+ * We collapsed the 3-tier model (Starter $39 / Pro $99 / Enterprise $199)
+ * into a single all-inclusive plan. Simpler pricing converts better and
+ * eliminates upgrade friction. Every contractor gets the full platform.
  */
 
 /** Yearly discount percentage */
@@ -29,22 +26,27 @@ function calcYearlyMonthlyEquivalent(monthlyPrice: number): number {
 }
 
 export const CONTRACTOR_TIERS = {
+  /**
+   * Legacy tier aliases — kept so existing database records with
+   * tier='starter' or tier='pro' still resolve without errors.
+   * All tiers now point to the same unlimited feature set.
+   */
   starter: {
-    name: 'Starter',
-    price: 39,
-    yearlyPrice: calcYearlyPrice(39),
-    trialDays: 0,
+    name: 'Unlimited',
+    price: 99,
+    yearlyPrice: calcYearlyPrice(99),
+    trialDays: 14,
     limits: {
-      activeJobs: 15,
-      invoicesPerMonth: 20,
-      customers: 50,
-      teamMembers: 0,
-      inventoryItems: 200,
-      equipmentItems: 20,
-      activeLeads: 0,
-      storageGB: 1,
-      jobPhotos: 5, // per job
-      quoteTemplates: 3,
+      activeJobs: -1,
+      invoicesPerMonth: -1,
+      customers: -1,
+      teamMembers: -1,
+      inventoryItems: -1,
+      equipmentItems: -1,
+      activeLeads: -1,
+      storageGB: 100,
+      jobPhotos: -1,
+      quoteTemplates: -1,
     },
     features: {
       // Core Features
@@ -59,82 +61,7 @@ export const CONTRACTOR_TIERS = {
       basicExpenseTracking: true,
       basicReports: true,
 
-      // Business Tools (unlocked for Starter — mirrors PM side philosophy)
-      advancedJobManagement: true,
-      jobTemplates: false,
-      customFields: false,
-      advancedInvoicing: true,
-      recurringInvoices: true,
-      unlimitedInvoices: false,
-      customerPortal: true,
-      customerTags: true,
-      communicationHistory: true,
-      crm: true,
-      leadManagement: true,
-      inventory: true,
-      equipment: true,
-      marketing: true,
-      referralProgram: true,
-      reviewManagement: true,
-      standardReports: true,
-      advancedReports: false,
-      quickbooksIntegration: false,
-
-      // Team & Collaboration (Pro only)
-      teamManagement: false,
-      teamChat: false,
-      rolePermissions: false,
-      scheduling: false,
-      timeTracking: false,
-      timesheets: false,
-
-      // Advanced & Scale (Enterprise only)
-      advancedAnalytics: false,
-      customDashboards: false,
-      forecasting: false,
-      apiAccess: false,
-      webhooks: false,
-      zapierIntegration: false,
-      phoneSupport: false,
-      prioritySupport: false,
-      accountManager: false,
-      whiteLabel: false,
-      customBranding: false,
-      payrollIntegration: false,
-    },
-    description: 'Everything a solo contractor needs — jobs, invoicing, CRM, inventory & equipment',
-  },
-  pro: {
-    name: 'Pro',
-    price: 99,
-    yearlyPrice: calcYearlyPrice(99),
-    trialDays: 0,
-    limits: {
-      activeJobs: 50,
-      invoicesPerMonth: -1, // unlimited
-      customers: 500,
-      teamMembers: 6,
-      inventoryItems: 200,
-      equipmentItems: 20,
-      activeLeads: 100,
-      storageGB: 10,
-      jobPhotos: 20, // per job
-      quoteTemplates: -1, // unlimited
-    },
-    features: {
-      // Core Features (from Starter)
-      basicJobManagement: true,
-      basicInvoicing: true,
-      basicCustomers: true,
-      mobileApp: true,
-      emailSupport: true,
-      workOrders: true,
-      paymentProcessing: true,
-      simpleCalendar: true,
-      basicExpenseTracking: true,
-      basicReports: true,
-
-      // Business Tools (from Starter)
+      // Business Tools
       advancedJobManagement: true,
       jobTemplates: true,
       customFields: true,
@@ -154,8 +81,9 @@ export const CONTRACTOR_TIERS = {
       standardReports: true,
       advancedExpenseTracking: true,
       quickbooksIntegration: true,
+      advancedReports: true,
 
-      // Team & Collaboration (Pro tier — mirrors PM side: chat, team members, scheduling)
+      // Team & Collaboration
       teamManagement: true,
       teamChat: true,
       rolePermissions: true,
@@ -165,94 +93,7 @@ export const CONTRACTOR_TIERS = {
       phoneSupport: true,
       prioritySupport: true,
 
-      // Locked Features (Enterprise only)
-      unlimitedJobs: false,
-      unlimitedCustomers: false,
-      unlimitedTeam: false,
-      advancedTeamFeatures: false,
-      advancedCrm: false,
-      advancedLeadManagement: false,
-      advancedInventory: false,
-      advancedEquipment: false,
-      advancedMarketing: false,
-      advancedAnalytics: false,
-      customDashboards: false,
-      forecasting: false,
-      apiAccess: false,
-      webhooks: false,
-      zapierIntegration: false,
-      accountManager: false,
-      whiteLabel: false,
-      customBranding: false,
-      payrollIntegration: false,
-      multiLocationInventory: false,
-      gpsTracking: false,
-      routeOptimization: false,
-      emailMarketing: false,
-      smsMarketing: false,
-    },
-    description: 'Everything in Starter plus team management, scheduling & priority support',
-  },
-  enterprise: {
-    name: 'Enterprise',
-    price: 199,
-    yearlyPrice: calcYearlyPrice(199),
-    trialDays: 0,
-    limits: {
-      activeJobs: -1, // unlimited
-      invoicesPerMonth: -1, // unlimited
-      customers: -1, // unlimited
-      teamMembers: -1, // unlimited
-      inventoryItems: -1, // unlimited
-      equipmentItems: -1, // unlimited
-      activeLeads: -1, // unlimited
-      storageGB: 100,
-      jobPhotos: -1, // unlimited per job
-      quoteTemplates: -1, // unlimited
-    },
-    features: {
-      // All Core Features
-      basicJobManagement: true,
-      basicInvoicing: true,
-      basicCustomers: true,
-      mobileApp: true,
-      emailSupport: true,
-      workOrders: true,
-      paymentProcessing: true,
-      simpleCalendar: true,
-      basicExpenseTracking: true,
-      basicReports: true,
-      
-      // All Pro Features
-      advancedJobManagement: true,
-      jobTemplates: true,
-      customFields: true,
-      advancedInvoicing: true,
-      recurringInvoices: true,
-      unlimitedInvoices: true,
-      customerPortal: true,
-      customerTags: true,
-      communicationHistory: true,
-      teamManagement: true,
-      teamChat: true,
-      rolePermissions: true,
-      scheduling: true,
-      timeTracking: true,
-      timesheets: true,
-      crm: true,
-      leadManagement: true,
-      inventory: true,
-      equipment: true,
-      marketing: true,
-      referralProgram: true,
-      reviewManagement: true,
-      standardReports: true,
-      advancedExpenseTracking: true,
-      phoneSupport: true,
-      prioritySupport: true,
-      quickbooksIntegration: true,
-      
-      // Enterprise Features
+      // Enterprise Features (all unlocked)
       unlimitedJobs: true,
       unlimitedCustomers: true,
       unlimitedTeam: true,
@@ -286,7 +127,203 @@ export const CONTRACTOR_TIERS = {
       onboardingAssistance: true,
       trainingSessions: true,
     },
-    description: 'Unlimited everything with full business operations suite',
+    description: 'Everything unlimited — one simple plan for your entire business',
+  },
+  pro: {
+    name: 'Unlimited',
+    price: 99,
+    yearlyPrice: calcYearlyPrice(99),
+    trialDays: 14,
+    limits: {
+      activeJobs: -1,
+      invoicesPerMonth: -1,
+      customers: -1,
+      teamMembers: -1,
+      inventoryItems: -1,
+      equipmentItems: -1,
+      activeLeads: -1,
+      storageGB: 100,
+      jobPhotos: -1,
+      quoteTemplates: -1,
+    },
+    features: {
+      // Core Features
+      basicJobManagement: true,
+      basicInvoicing: true,
+      basicCustomers: true,
+      mobileApp: true,
+      emailSupport: true,
+      workOrders: true,
+      paymentProcessing: true,
+      simpleCalendar: true,
+      basicExpenseTracking: true,
+      basicReports: true,
+
+      // Business Tools
+      advancedJobManagement: true,
+      jobTemplates: true,
+      customFields: true,
+      advancedInvoicing: true,
+      recurringInvoices: true,
+      unlimitedInvoices: true,
+      customerPortal: true,
+      customerTags: true,
+      communicationHistory: true,
+      crm: true,
+      leadManagement: true,
+      inventory: true,
+      equipment: true,
+      marketing: true,
+      referralProgram: true,
+      reviewManagement: true,
+      standardReports: true,
+      advancedExpenseTracking: true,
+      quickbooksIntegration: true,
+      advancedReports: true,
+
+      // Team & Collaboration
+      teamManagement: true,
+      teamChat: true,
+      rolePermissions: true,
+      scheduling: true,
+      timeTracking: true,
+      timesheets: true,
+      phoneSupport: true,
+      prioritySupport: true,
+
+      // Enterprise Features (all unlocked)
+      unlimitedJobs: true,
+      unlimitedCustomers: true,
+      unlimitedTeam: true,
+      advancedTeamFeatures: true,
+      advancedCrm: true,
+      advancedLeadManagement: true,
+      advancedInventory: true,
+      advancedEquipment: true,
+      advancedMarketing: true,
+      advancedAnalytics: true,
+      customDashboards: true,
+      forecasting: true,
+      apiAccess: true,
+      webhooks: true,
+      zapierIntegration: true,
+      accountManager: true,
+      whiteLabel: true,
+      customBranding: true,
+      payrollIntegration: true,
+      multiLocationInventory: true,
+      gpsTracking: true,
+      routeOptimization: true,
+      emailMarketing: true,
+      smsMarketing: true,
+      shiftManagement: true,
+      performanceTracking: true,
+      teamAnalytics: true,
+      automatedWorkflows: true,
+      customIntegrations: true,
+      dedicatedSupport: true,
+      onboardingAssistance: true,
+      trainingSessions: true,
+    },
+    description: 'Everything unlimited — one simple plan for your entire business',
+  },
+  enterprise: {
+    name: 'Unlimited',
+    price: 99,
+    yearlyPrice: calcYearlyPrice(99),
+    trialDays: 14,
+    limits: {
+      activeJobs: -1,
+      invoicesPerMonth: -1,
+      customers: -1,
+      teamMembers: -1,
+      inventoryItems: -1,
+      equipmentItems: -1,
+      activeLeads: -1,
+      storageGB: 100,
+      jobPhotos: -1,
+      quoteTemplates: -1,
+    },
+    features: {
+      // Core Features
+      basicJobManagement: true,
+      basicInvoicing: true,
+      basicCustomers: true,
+      mobileApp: true,
+      emailSupport: true,
+      workOrders: true,
+      paymentProcessing: true,
+      simpleCalendar: true,
+      basicExpenseTracking: true,
+      basicReports: true,
+
+      // Business Tools
+      advancedJobManagement: true,
+      jobTemplates: true,
+      customFields: true,
+      advancedInvoicing: true,
+      recurringInvoices: true,
+      unlimitedInvoices: true,
+      customerPortal: true,
+      customerTags: true,
+      communicationHistory: true,
+      crm: true,
+      leadManagement: true,
+      inventory: true,
+      equipment: true,
+      marketing: true,
+      referralProgram: true,
+      reviewManagement: true,
+      standardReports: true,
+      advancedExpenseTracking: true,
+      quickbooksIntegration: true,
+      advancedReports: true,
+
+      // Team & Collaboration
+      teamManagement: true,
+      teamChat: true,
+      rolePermissions: true,
+      scheduling: true,
+      timeTracking: true,
+      timesheets: true,
+      phoneSupport: true,
+      prioritySupport: true,
+
+      // Enterprise Features (all unlocked)
+      unlimitedJobs: true,
+      unlimitedCustomers: true,
+      unlimitedTeam: true,
+      advancedTeamFeatures: true,
+      advancedCrm: true,
+      advancedLeadManagement: true,
+      advancedInventory: true,
+      advancedEquipment: true,
+      advancedMarketing: true,
+      advancedAnalytics: true,
+      customDashboards: true,
+      forecasting: true,
+      apiAccess: true,
+      webhooks: true,
+      zapierIntegration: true,
+      accountManager: true,
+      whiteLabel: true,
+      customBranding: true,
+      payrollIntegration: true,
+      multiLocationInventory: true,
+      gpsTracking: true,
+      routeOptimization: true,
+      emailMarketing: true,
+      smsMarketing: true,
+      shiftManagement: true,
+      performanceTracking: true,
+      teamAnalytics: true,
+      automatedWorkflows: true,
+      customIntegrations: true,
+      dedicatedSupport: true,
+      onboardingAssistance: true,
+      trainingSessions: true,
+    },
+    description: 'Everything unlimited — one simple plan for your entire business',
   },
 } as const;
 
@@ -295,23 +332,25 @@ export type ContractorTierFeatures = typeof CONTRACTOR_TIERS[ContractorTier]['fe
 export type ContractorTierLimits = typeof CONTRACTOR_TIERS[ContractorTier]['limits'];
 
 /**
- * Normalize legacy tier names to current tier names
+ * Normalize legacy tier names to current tier names.
+ * All tiers now resolve to 'pro' (the single $99 unlimited plan).
  */
 export function normalizeContractorTier(tier: string | null | undefined): ContractorTier {
-  if (!tier) return 'starter';
+  if (!tier) return 'pro';
   
   const tierMap: Record<string, ContractorTier> = {
-    'free': 'starter',
-    'starter': 'starter',
-    'basic': 'starter',
+    'free': 'pro',
+    'starter': 'pro',
+    'basic': 'pro',
     'growth': 'pro',
     'professional': 'pro',
     'pro': 'pro',
-    'enterprise': 'enterprise',
-    'business': 'enterprise',
+    'enterprise': 'pro',
+    'business': 'pro',
+    'unlimited': 'pro',
   };
   
-  return tierMap[tier.toLowerCase()] || 'starter';
+  return tierMap[tier.toLowerCase()] || 'pro';
 }
 
 /**
@@ -322,34 +361,28 @@ export function getTierConfig(tier: ContractorTier) {
 }
 
 /**
- * Get the required tier for a specific feature
+ * Get the required tier for a specific feature.
+ * Since all features are now unlocked on the single plan, always returns 'pro'.
  */
 export function getRequiredTier(feature: keyof ContractorTierFeatures): ContractorTier | null {
-  // Check each tier from lowest to highest
-  const tiers: ContractorTier[] = ['starter', 'pro', 'enterprise'];
-  
-  for (const tier of tiers) {
-    if (CONTRACTOR_TIERS[tier].features[feature]) {
-      return tier;
-    }
-  }
-  
-  return null; // Feature not available in any tier
+  // All features are unlocked on the single plan
+  return 'pro';
 }
 
 /**
- * Check if a tier has access to a specific feature
+ * Check if a tier has access to a specific feature.
+ * All tiers now have access to everything.
  */
 export function hasFeatureAccess(
   tier: ContractorTier,
   feature: keyof ContractorTierFeatures
 ): boolean {
-  return CONTRACTOR_TIERS[tier].features[feature];
+  return true;
 }
 
 /**
- * Get the limit for a specific feature in a tier
- * Returns -1 for unlimited, 0 for not available
+ * Get the limit for a specific feature in a tier.
+ * All limits are now unlimited (-1).
  */
 export function getFeatureLimit(
   tier: ContractorTier,
@@ -407,31 +440,19 @@ export function getUsagePercentage(current: number, limit: number): number {
 }
 
 /**
- * Get the next tier for upgrade
+ * Get the next tier for upgrade.
+ * Since there's only one tier now, always returns null.
  */
 export function getUpgradeTier(currentTier: ContractorTier): ContractorTier | null {
-  switch (currentTier) {
-    case 'starter':
-      return 'pro';
-    case 'pro':
-      return 'enterprise';
-    case 'enterprise':
-      return null; // Already at highest tier
-  }
+  return null; // Single plan, no upgrade needed
 }
 
 /**
- * Get the previous tier for downgrade
+ * Get the previous tier for downgrade.
+ * Since there's only one tier now, always returns null.
  */
 export function getDowngradeTier(currentTier: ContractorTier): ContractorTier | null {
-  switch (currentTier) {
-    case 'enterprise':
-      return 'pro';
-    case 'pro':
-      return 'starter';
-    case 'starter':
-      return null; // Already at lowest tier
-  }
+  return null; // Single plan, no downgrade available
 }
 
 /**
@@ -459,116 +480,70 @@ export function getTierLimits(tier: ContractorTier): Record<string, number> {
 }
 
 /**
- * Compare two tiers
- * Returns: -1 if tier1 < tier2, 0 if equal, 1 if tier1 > tier2
+ * Compare two tiers.
+ * All tiers are equivalent now — always returns 0.
  */
 export function compareTiers(tier1: ContractorTier, tier2: ContractorTier): number {
-  const tierOrder: Record<ContractorTier, number> = {
-    starter: 1,
-    pro: 2,
-    enterprise: 3,
-  };
-  
-  return Math.sign(tierOrder[tier1] - tierOrder[tier2]);
+  return 0;
 }
 
 /**
  * Check if tier1 is higher than tier2
  */
 export function isHigherTier(tier1: ContractorTier, tier2: ContractorTier): boolean {
-  return compareTiers(tier1, tier2) > 0;
+  return false;
 }
 
 /**
  * Check if tier1 is lower than tier2
  */
 export function isLowerTier(tier1: ContractorTier, tier2: ContractorTier): boolean {
-  return compareTiers(tier1, tier2) < 0;
+  return false;
 }
 
 /**
- * Get features that would be gained by upgrading
+ * Get features that would be gained by upgrading.
+ * Single plan — no features to gain.
  */
 export function getUpgradeFeatures(
   currentTier: ContractorTier,
   targetTier: ContractorTier
 ): string[] {
-  const currentFeatures = new Set(getTierFeatures(currentTier));
-  const targetFeatures = getTierFeatures(targetTier);
-  
-  return targetFeatures.filter(feature => !currentFeatures.has(feature));
+  return [];
 }
 
 /**
- * Get features that would be lost by downgrading
+ * Get features that would be lost by downgrading.
+ * Single plan — no features to lose.
  */
 export function getDowngradeFeatures(
   currentTier: ContractorTier,
   targetTier: ContractorTier
 ): string[] {
-  const currentFeatures = getTierFeatures(currentTier);
-  const targetFeatures = new Set(getTierFeatures(targetTier));
-  
-  return currentFeatures.filter(feature => !targetFeatures.has(feature));
+  return [];
 }
 
+
 /**
- * Format limit for display
+ * Check if a tier string is a valid tier key.
+ * With the single-plan model, all recognized tier names are valid.
  */
-export function formatLimit(limit: number): string {
-  if (limit === -1) return 'Unlimited';
-  if (limit === 0) return 'Not available';
-  return limit.toString();
+export function isValidTier(tier: string): tier is ContractorTier {
+  return ['starter', 'pro', 'enterprise'].includes(tier);
 }
 
 /**
- * Format price for display
- */
-export function formatPrice(price: number): string {
-  return `$${price.toFixed(2)}`;
-}
-
-/**
- * Get monthly price for a tier
+ * Get the monthly price for a tier.
+ * All tiers are now $99/month.
  */
 export function getMonthlyPrice(tier: ContractorTier): number {
   return CONTRACTOR_TIERS[tier].price;
 }
 
 /**
- * Get yearly price for a tier (20% discount applied)
+ * Get the price difference between two tiers.
+ * Since all tiers are the same price ($99), always returns 0.
  */
-export function getYearlyPriceForTier(tier: ContractorTier): number {
-  return CONTRACTOR_TIERS[tier].yearlyPrice;
-}
-
-/**
- * Get the equivalent monthly price when billed yearly
- */
-export function getContractorYearlyMonthlyEquivalent(tier: ContractorTier): number {
-  return calcYearlyMonthlyEquivalent(CONTRACTOR_TIERS[tier].price);
-}
-
-/**
- * Calculate price difference between tiers
- */
-export function getPriceDifference(
-  currentTier: ContractorTier,
-  targetTier: ContractorTier
-): number {
-  return getMonthlyPrice(targetTier) - getMonthlyPrice(currentTier);
-}
-
-/**
- * Get all tier names
- */
-export function getAllTiers(): ContractorTier[] {
-  return ['starter', 'pro', 'enterprise'];
-}
-
-/**
- * Validate if a string is a valid tier
- */
-export function isValidTier(tier: string): tier is ContractorTier {
-  return tier === 'starter' || tier === 'pro' || tier === 'enterprise';
+export function getPriceDifference(fromTier: ContractorTier, toTier: ContractorTier): number {
+  return getMonthlyPrice(toTier) - getMonthlyPrice(fromTier);
 }

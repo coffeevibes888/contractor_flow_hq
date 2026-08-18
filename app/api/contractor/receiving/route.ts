@@ -98,5 +98,16 @@ export async function POST(req: NextRequest) {
     },
   });
 
+  // Check if any scheduled jobs now have all materials in stock
+  try {
+    const { checkJobReadinessOnReceive } = await import('@/lib/services/contractor-automation');
+    await checkJobReadinessOnReceive({
+      contractorId: contractor.id,
+      itemId,
+    });
+  } catch (err) {
+    console.error('[receiving] job readiness check failed (non-blocking):', err);
+  }
+
   return NextResponse.json(record, { status: 201 });
 }

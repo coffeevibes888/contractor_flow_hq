@@ -106,7 +106,7 @@ export default function TrialReminderEmail({
           </Section>
           
           <Text style={text}>
-            Plans start at just $39/month. Cancel anytime.
+            {role === 'contractor' ? 'Just $99/month for everything unlimited. Cancel anytime.' : 'Plans start at just $39/month. Cancel anytime.'}
           </Text>
           
           <Text style={footer}>
