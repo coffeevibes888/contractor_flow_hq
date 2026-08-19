@@ -310,7 +310,7 @@ function ContractorShowcase() {
                   </span>
                 ))}
               </div>
-              <p className="text-slate-600 text-xs md:text-sm font-medium">Starts at $39/month. No per-job fees. Ever.</p>
+              <p className="text-slate-600 text-xs md:text-sm font-medium">$99/mo flat. Everything included. No per-job fees. Ever.</p>
             </div>
           </div>
         </div>
@@ -388,16 +388,17 @@ export default function AudienceSwitcher({
                     <span className="block bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent whitespace-nowrap">One Platform.</span>
                   </h1>
                   <p className="text-base md:text-sm lg:text-base font-medium max-w-sm leading-relaxed mx-auto md:mx-0 text-gray-600">
-                    Jobs, invoices, leads, team scheduling, inventory, payroll, and your own branded marketplace profile — all in one platform built for contractors.
+                    Get found by property managers and home owners, win the job, and run everything — invoices, crew, scheduling, inventory — from one place. <span className="font-bold text-slate-900">$99/mo flat. No per-lead fees, ever.</span>
                   </p>
                   <div className="flex flex-col items-center gap-2 pt-1">
                     <Link
                       href="/sign-up?role=contractor"
                       className="group inline-flex items-center justify-center rounded-full bg-gradient-to-r from-rose-500 to-orange-400 text-white px-7 py-3.5 text-base md:text-sm font-bold shadow-lg shadow-rose-500/25 hover:shadow-xl hover:shadow-rose-500/30 hover:scale-105 transition-all duration-200"
                     >
-                      Start Free Trial — No Card Required
+                      Start Free Trial
                       <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
                     </Link>
+                    <p className="text-xs font-medium text-gray-500">14-day free trial · No credit card · Cancel anytime</p>
 
                   </div>
                 </div>

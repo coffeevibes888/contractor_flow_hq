@@ -30,6 +30,7 @@ const CSRF_EXEMPT_PREFIXES = [
   '/api/internal/',        // Internal service-to-service calls
   '/api/uploadthing',      // File upload callbacks
   '/api/auth/',            // NextAuth callbacks (Google OAuth, etc.)
+  '/api/mobile/',          // Mobile app API (native apps don't send origin)
 ];
 
 function shouldSkipIpCheck(pathname: string): boolean {
@@ -109,6 +110,35 @@ export async function middleware(request: NextRequest) {
         // Fail open — a slow or unavailable DB shouldn't lock out real users
       }
     }
+  }
+
+  // ── CORS for mobile API (needed for Expo web preview in development) ───
+  if (pathname.startsWith('/api/mobile/')) {
+    const origin = request.headers.get('origin') || '*';
+
+    // Handle preflight OPTIONS request
+    if (method === 'OPTIONS') {
+      return new NextResponse(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': origin,
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          'Access-Control-Max-Age': '86400',
+        },
+      });
+    }
+
+    // For actual requests, add CORS headers and forward
+    const mobileHeaders = new Headers(request.headers);
+    mobileHeaders.set('x-pathname', pathname);
+    const response = NextResponse.next({
+      request: { headers: mobileHeaders },
+    });
+    response.headers.set('Access-Control-Allow-Origin', origin);
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    return response;
   }
 
   // ── Pathname header + full URL (path+search) ─────────────────────────────

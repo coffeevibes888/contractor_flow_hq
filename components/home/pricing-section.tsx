@@ -153,14 +153,17 @@ export default function PricingSection({ variant = 'pm' }: { variant?: 'pm' | 'c
           {/* Main content: Price hero left + Features right */}
           <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start">
             {/* Left — Price card */}
-            <div className="rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border border-slate-700/50 p-8 md:p-10 shadow-2xl sticky top-24">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-white via-rose-50 to-orange-50 border border-rose-200/70 p-8 md:p-10 shadow-xl ring-1 ring-rose-100/50 sticky top-24">
+              {/* Top accent bar */}
+              <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-rose-500 to-orange-400" />
+
               <div className="flex items-center gap-3 mb-6">
-                <div className="rounded-xl bg-orange-500/20 p-3 border border-orange-500/30">
-                  <Zap className="h-6 w-6 text-orange-400" />
+                <div className="rounded-xl bg-gradient-to-br from-rose-500 to-orange-400 p-3 shadow-md shadow-rose-500/20">
+                  <Zap className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-white">Unlimited</h3>
-                  <p className="text-sm text-slate-400">Everything for your business</p>
+                  <h3 className="text-2xl font-bold text-slate-900">Unlimited</h3>
+                  <p className="text-sm text-slate-500">Everything for your business</p>
                 </div>
               </div>
 
@@ -169,39 +172,39 @@ export default function PricingSection({ variant = 'pm' }: { variant?: 'pm' | 'c
                 {isYearly ? (
                   <>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-5xl font-black text-white">${getYearlyPrice(99).toFixed(2)}</span>
-                      <span className="text-slate-400 font-semibold">/year</span>
+                      <span className="text-5xl font-black text-slate-900">${getYearlyPrice(99).toFixed(2)}</span>
+                      <span className="text-slate-500 font-semibold">/year</span>
                     </div>
                     <div className="mt-2 flex items-center gap-2">
-                      <span className="text-sm line-through text-slate-500">${(99 * 12).toFixed(2)}/yr</span>
-                      <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400">
+                      <span className="text-sm line-through text-slate-400">${(99 * 12).toFixed(2)}/yr</span>
+                      <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
                         Save ${((99 * 12) - getYearlyPrice(99)).toFixed(2)}
                       </span>
                     </div>
                   </>
                 ) : (
                   <div className="flex items-baseline gap-1">
-                    <span className="text-5xl font-black text-white">$99</span>
-                    <span className="text-slate-400 font-semibold">/month</span>
+                    <span className="text-5xl font-black text-slate-900">$99</span>
+                    <span className="text-slate-500 font-semibold">/month</span>
                   </div>
                 )}
               </div>
 
               {/* Billing toggle */}
-              <div className="flex items-center gap-3 mb-8 pb-8 border-b border-slate-700/50">
-                <span className={`text-sm font-semibold ${!isYearly ? 'text-white' : 'text-slate-500'}`}>Monthly</span>
+              <div className="flex items-center gap-3 mb-8 pb-8 border-b border-rose-200/60">
+                <span className={`text-sm font-semibold ${!isYearly ? 'text-slate-900' : 'text-slate-400'}`}>Monthly</span>
                 <button
                   onClick={() => setBillingInterval(isYearly ? 'monthly' : 'yearly')}
-                  className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-slate-900 ${
-                    isYearly ? 'bg-gradient-to-r from-orange-500 to-rose-500' : 'bg-slate-600'
+                  className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-white ${
+                    isYearly ? 'bg-gradient-to-r from-orange-500 to-rose-500' : 'bg-slate-300'
                   }`}
                   aria-label="Toggle billing interval"
                 >
                   <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform duration-300 ${isYearly ? 'translate-x-8' : 'translate-x-1'}`} />
                 </button>
-                <span className={`text-sm font-semibold ${isYearly ? 'text-white' : 'text-slate-500'}`}>Yearly</span>
+                <span className={`text-sm font-semibold ${isYearly ? 'text-slate-900' : 'text-slate-400'}`}>Yearly</span>
                 {isYearly && (
-                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400">
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
                     Save {YEARLY_DISCOUNT_PERCENT}%
                   </span>
                 )}
@@ -223,7 +226,7 @@ export default function PricingSection({ variant = 'pm' }: { variant?: 'pm' | 'c
                 )}
               </button>
 
-              <p className="text-center text-xs text-slate-400 mt-4">
+              <p className="text-center text-xs text-slate-500 mt-4">
                 No credit card required. Cancel anytime.
               </p>
 
@@ -235,7 +238,7 @@ export default function PricingSection({ variant = 'pm' }: { variant?: 'pm' | 'c
                   { icon: '✓', text: 'Cancel anytime' },
                   { icon: '🎯', text: 'No contracts' },
                 ].map((badge) => (
-                  <div key={badge.text} className="flex items-center gap-2 text-xs text-slate-400">
+                  <div key={badge.text} className="flex items-center gap-2 text-xs text-slate-500">
                     <span>{badge.icon}</span>
                     <span>{badge.text}</span>
                   </div>
@@ -292,7 +295,7 @@ export default function PricingSection({ variant = 'pm' }: { variant?: 'pm' | 'c
                 <thead>
                   <tr className="border-b border-slate-100 bg-slate-50/80">
                     <th className="text-left py-4 px-5 font-semibold text-slate-500">Feature</th>
-                    <th className="text-center py-4 px-4 font-bold text-rose-600">PropertyFlow HQ</th>
+                    <th className="text-center py-4 px-4 font-bold text-rose-600">Contractor Flow HQ</th>
                     <th className="text-center py-4 px-4 font-semibold text-slate-500">Angi Leads</th>
                     <th className="text-center py-4 px-4 font-semibold text-slate-500">Thumbtack</th>
                     <th className="text-center py-4 px-4 font-semibold text-slate-500">Jobber</th>
