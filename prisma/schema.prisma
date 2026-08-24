@@ -2333,36 +2333,81 @@ model Contractor {
 
 // ContractorEstimate - Quotes and estimate templates
 model ContractorEstimate {
-  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  contractorId   String    @db.Uuid
-  landlordId     String?   @db.Uuid
-  workOrderId    String?   @db.Uuid
+  id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contractorId        String?   @db.Uuid // PM-side contractor (marketplace context, optional)
+  contractorProfileId String?   @db.Uuid // Standalone contractor (mobile/web app)
+  customerId          String?   @db.Uuid // ContractorCustomer link
+  landlordId          String?   @db.Uuid
+  workOrderId         String?   @db.Uuid
+
+  // Identification
+  estimateNumber String? // Human-readable: EST-001, EST-002, etc.
   title          String
   description    String?
-  lineItems      Json      @default("[]") @db.Json // [{description, qty, unitPrice, total}]
-  laborCost      Decimal   @default(0) @db.Decimal(12, 2)
-  materialsCost  Decimal   @default(0) @db.Decimal(12, 2)
-  totalAmount    Decimal   @db.Decimal(12, 2)
+
+  // Trade & Category
+  trade    String? // painting, roofing, concrete, electrical, plumbing, hvac, general, landscaping, flooring, siding
+  category String? // Sub-category within trade (e.g. "interior" for painting, "shingle" for roofing)
+
+  // Line Items & Pricing
+  lineItems     Json    @default("[]") @db.Json // [{description, qty, unit, unitPrice, total, category}]
+  laborCost     Decimal @default(0) @db.Decimal(12, 2)
+  materialsCost Decimal @default(0) @db.Decimal(12, 2)
+  markup        Decimal @default(0) @db.Decimal(5, 2) // Markup percentage (e.g. 20.00 = 20%)
+  discount      Decimal @default(0) @db.Decimal(12, 2) // Flat discount amount
+  taxRate       Decimal @default(0) @db.Decimal(5, 2) // Tax percentage
+  totalAmount   Decimal @db.Decimal(12, 2)
+
+  // Tiered Pricing (Good / Better / Best)
+  tiers Json? @db.Json // [{name: "Good", lineItems: [...], laborCost, materialsCost, totalAmount}, ...]
+
+  // Measurements (from Google Solar API, manual entry, etc.)
+  measurements Json? @db.Json // {roofArea, roofPitch, wallArea, drivewaySqft, source: "google_solar"|"manual"}
+
+  // Hours & Timeline
   estimatedHours Decimal?  @db.Decimal(6, 2)
   validUntil     DateTime? @db.Timestamp(6)
-  status         String    @default("draft") // draft, sent, viewed, accepted, declined, expired
-  isTemplate     Boolean   @default(false)
-  templateName   String?
-  attachmentUrl  String? // PDF upload of their standard estimate form
-  sentAt         DateTime? @db.Timestamp(6)
-  viewedAt       DateTime? @db.Timestamp(6)
-  respondedAt    DateTime? @db.Timestamp(6)
-  createdAt      DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt      DateTime  @updatedAt
 
-  contractor Contractor @relation(fields: [contractorId], references: [id], onDelete: Cascade)
-  landlord   Landlord?  @relation(fields: [landlordId], references: [id], onDelete: SetNull)
-  workOrder  WorkOrder? @relation(fields: [workOrderId], references: [id], onDelete: SetNull)
+  // Status & Lifecycle
+  status String @default("draft") // draft, sent, viewed, accepted, declined, expired, converted
+
+  // Template Support
+  isTemplate   Boolean @default(false)
+  templateName String?
+
+  // Attachments & Photos
+  attachmentUrl String? // PDF upload of their standard estimate form
+  photos        String[] @default([]) // Job site photos attached to estimate
+
+  // Customer-facing notes & terms
+  notes          String? // Internal notes
+  customerNotes  String? // Notes visible to customer
+  termsConditions String? // Payment terms, warranty info, etc.
+
+  // Tracking timestamps
+  sentAt      DateTime? @db.Timestamp(6)
+  viewedAt    DateTime? @db.Timestamp(6)
+  respondedAt DateTime? @db.Timestamp(6)
+  acceptedAt  DateTime? @db.Timestamp(6)
+  declinedAt  DateTime? @db.Timestamp(6)
+  convertedAt DateTime? @db.Timestamp(6) // When converted to a job/invoice
+  createdAt   DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  contractor        Contractor?        @relation(fields: [contractorId], references: [id], onDelete: Cascade)
+  contractorProfile ContractorProfile? @relation(fields: [contractorProfileId], references: [id], onDelete: Cascade)
+  customer          ContractorCustomer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  landlord          Landlord?          @relation(fields: [landlordId], references: [id], onDelete: SetNull)
+  workOrder         WorkOrder?         @relation(fields: [workOrderId], references: [id], onDelete: SetNull)
 
   @@index([contractorId])
+  @@index([contractorProfileId])
+  @@index([customerId])
   @@index([landlordId])
   @@index([status])
   @@index([isTemplate])
+  @@index([trade])
 }
 
 // ContractorInvite - Pending invitation to join platform
@@ -4260,6 +4305,9 @@ model ContractorProfile {
   quotes ContractorQuote[]
   bids   ContractorBid[]
 
+  // Estimates (standalone contractor estimate builder)
+  estimates ContractorEstimate[]
+
   // Verification
   verification          ContractorVerification?
   verificationDocuments ContractorVerificationDocument[]
@@ -4833,6 +4881,7 @@ model ContractorCustomer {
 
   // Business Operating System relations
   jobs              ContractorJob[]
+  estimates         ContractorEstimate[]
   referralsMade     ContractorReferral[] @relation("ReferrerCustomer")
   referralsReceived ContractorReferral[] @relation("ReferredCustomer")
   warranties        ContractorWarranty[]

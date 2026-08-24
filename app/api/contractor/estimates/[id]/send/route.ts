@@ -2,27 +2,40 @@
  * POST /api/contractor/estimates/[id]/send
  *
  * Marks an estimate as sent and emits `contractor.estimate.sent`. The event
- * is what powers the followup automation (48h nudge, 5d discount, 14d expire).
- *
- * The route was previously an empty file — it existed in the routing tree
- * but did nothing. Implementing it here turns the "Send Estimate" button
- * into the trigger for the entire downstream pipeline.
+ * powers the followup automation (48h nudge, 5d discount, 14d expire).
  */
 
 import { auth } from '@/auth';
 import { prisma } from '@/db/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import { eventBus } from '@/lib/event-system';
-import { errorResponse, serverError } from '@/lib/contractor-route-helpers';
+
+async function verifyOwnership(userId: string, estimate: any): Promise<boolean> {
+  if (estimate.contractorProfileId) {
+    const profile = await prisma.contractorProfile.findUnique({
+      where: { id: estimate.contractorProfileId },
+      select: { userId: true },
+    });
+    if (profile?.userId === userId) return true;
+  }
+  if (estimate.contractorId) {
+    const contractor = await prisma.contractor.findUnique({
+      where: { id: estimate.contractorId },
+      select: { userId: true },
+    });
+    if (contractor?.userId === userId) return true;
+  }
+  return false;
+}
 
 export async function POST(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return errorResponse('Unauthorized', 401);
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { id } = await params;
@@ -30,25 +43,25 @@ export async function POST(
     const estimate = await prisma.contractorEstimate.findUnique({
       where: { id },
       include: {
-        contractor: { select: { id: true, userId: true } },
-        landlord: { select: { id: true, companyEmail: true, companyName: true } },
+        customer: { select: { id: true, name: true, email: true, phone: true } },
       },
     });
 
     if (!estimate) {
-      return errorResponse('Estimate not found', 404);
+      return NextResponse.json({ error: 'Estimate not found' }, { status: 404 });
     }
 
-    if (estimate.contractor.userId !== session.user.id) {
-      return errorResponse('Unauthorized', 403);
+    const isOwner = await verifyOwnership(session.user.id, estimate);
+    if (!isOwner) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     if (estimate.isTemplate) {
-      return errorResponse('Templates cannot be sent', 400, { code: 'IS_TEMPLATE' });
+      return NextResponse.json({ error: 'Templates cannot be sent' }, { status: 400 });
     }
 
-    if (estimate.status === 'sent' || estimate.status === 'viewed') {
-      return errorResponse('Estimate has already been sent', 400, { code: 'ALREADY_SENT' });
+    if (estimate.status === 'accepted' || estimate.status === 'converted') {
+      return NextResponse.json({ error: 'This estimate has already been accepted' }, { status: 400 });
     }
 
     const sentAt = new Date();
@@ -61,22 +74,21 @@ export async function POST(
       },
     });
 
-    // The event handler is responsible for the actual delivery (email, SMS,
-    // notification) plus scheduling the followup reminder cascade. Emitting
-    // here keeps the route handler thin and the side effects testable.
     await eventBus.emit('contractor.estimate.sent', {
       estimateId: estimate.id,
       contractorId: estimate.contractorId,
-      contractorUserId: estimate.contractor.userId,
-      landlordId: estimate.landlordId,
+      contractorProfileId: estimate.contractorProfileId,
+      contractorUserId: session.user.id,
       title: estimate.title,
       totalAmount: Number(estimate.totalAmount),
       validUntil: estimate.validUntil ? estimate.validUntil.toISOString() : null,
       sentAt: sentAt.toISOString(),
+      customer: estimate.customer,
     });
 
     return NextResponse.json({ estimate: updated });
   } catch (error) {
-    return serverError('Failed to send estimate', error);
+    console.error('Error sending estimate:', error);
+    return NextResponse.json({ error: 'Failed to send estimate' }, { status: 500 });
   }
 }

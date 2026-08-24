@@ -3,6 +3,30 @@ import { prisma } from '@/db/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import { eventBus } from '@/lib/event-system';
 
+/**
+ * Helper: Verify the current user owns this estimate via either
+ * ContractorProfile or PM-side Contractor.
+ */
+async function verifyOwnership(userId: string, estimate: any): Promise<boolean> {
+  // Check ContractorProfile ownership
+  if (estimate.contractorProfileId) {
+    const profile = await prisma.contractorProfile.findUnique({
+      where: { id: estimate.contractorProfileId },
+      select: { userId: true },
+    });
+    if (profile?.userId === userId) return true;
+  }
+  // Check PM-side Contractor ownership
+  if (estimate.contractorId) {
+    const contractor = await prisma.contractor.findUnique({
+      where: { id: estimate.contractorId },
+      select: { userId: true },
+    });
+    if (contractor?.userId === userId) return true;
+  }
+  return false;
+}
+
 // GET - Fetch single estimate
 export async function GET(
   req: NextRequest,
@@ -19,15 +43,16 @@ export async function GET(
     const estimate = await prisma.contractorEstimate.findUnique({
       where: { id },
       include: {
-        contractor: { select: { id: true, name: true, userId: true } },
+        customer: { select: { id: true, name: true, email: true, phone: true, address: true } },
+        contractorProfile: { select: { id: true, businessName: true, displayName: true, email: true, phone: true, logoUrl: true } },
         landlord: { select: { id: true, name: true, companyName: true, companyEmail: true } },
-        workOrder: { 
-          select: { 
-            id: true, 
-            title: true, 
+        workOrder: {
+          select: {
+            id: true,
+            title: true,
             description: true,
-            property: { select: { name: true, address: true } } 
-          } 
+            property: { select: { name: true, address: true } },
+          },
         },
       },
     });
@@ -36,8 +61,8 @@ export async function GET(
       return NextResponse.json({ error: 'Estimate not found' }, { status: 404 });
     }
 
-    // Verify ownership
-    if (estimate.contractor.userId !== session.user.id) {
+    const isOwner = await verifyOwnership(session.user.id, estimate);
+    if (!isOwner) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
@@ -62,52 +87,87 @@ export async function PUT(
     const { id } = await params;
     const body = await req.json();
 
-    // Verify ownership
     const existing = await prisma.contractorEstimate.findUnique({
       where: { id },
-      include: { contractor: { select: { userId: true } } },
     });
 
-    if (!existing || existing.contractor.userId !== session.user.id) {
+    if (!existing) {
+      return NextResponse.json({ error: 'Estimate not found' }, { status: 404 });
+    }
+
+    const isOwner = await verifyOwnership(session.user.id, existing);
+    if (!isOwner) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     const {
       title,
       description,
+      trade,
+      category,
+      customerId,
       lineItems,
       laborCost,
       materialsCost,
+      markup,
+      discount,
+      taxRate,
       estimatedHours,
       validUntil,
+      tiers,
+      measurements,
+      notes,
+      customerNotes,
+      termsConditions,
+      photos,
       templateName,
       attachmentUrl,
     } = body;
 
-    // Recalculate total if line items changed
-    let totalAmount = existing.totalAmount;
-    if (lineItems || laborCost !== undefined || materialsCost !== undefined) {
-      const items = lineItems || existing.lineItems;
-      const labor = laborCost ?? Number(existing.laborCost);
-      const materials = materialsCost ?? Number(existing.materialsCost);
-      const lineItemsTotal = (items as any[]).reduce((sum: number, item: any) => 
-        sum + (Number(item.qty) * Number(item.unitPrice)), 0);
-      totalAmount = lineItemsTotal + labor + materials;
-    }
+    // Recalculate total if pricing fields changed
+    const finalLineItems = lineItems ?? existing.lineItems;
+    const finalLaborCost = laborCost ?? Number(existing.laborCost);
+    const finalMaterialsCost = materialsCost ?? Number(existing.materialsCost);
+    const finalMarkup = markup ?? Number(existing.markup);
+    const finalDiscount = discount ?? Number(existing.discount);
+    const finalTaxRate = taxRate ?? Number(existing.taxRate);
+
+    const lineItemsTotal = (finalLineItems as any[]).reduce(
+      (sum: number, item: any) => sum + (Number(item.qty) || Number(item.quantity) || 1) * (Number(item.unitPrice) || 0),
+      0
+    );
+    const subtotal = lineItemsTotal + Number(finalLaborCost) + Number(finalMaterialsCost);
+    const markupAmount = subtotal * (Number(finalMarkup) / 100);
+    const afterMarkup = subtotal + markupAmount;
+    const afterDiscount = afterMarkup - Number(finalDiscount);
+    const taxAmount = afterDiscount * (Number(finalTaxRate) / 100);
+    const totalAmount = afterDiscount + taxAmount;
 
     const estimate = await prisma.contractorEstimate.update({
       where: { id },
       data: {
         title: title ?? existing.title,
-        description: description ?? existing.description,
+        description: description !== undefined ? description : existing.description,
+        trade: trade !== undefined ? trade : existing.trade,
+        category: category !== undefined ? category : existing.category,
+        customerId: customerId !== undefined ? customerId : existing.customerId,
         lineItems: lineItems ?? existing.lineItems,
-        laborCost: laborCost ?? existing.laborCost,
-        materialsCost: materialsCost ?? existing.materialsCost,
+        laborCost: Number(finalLaborCost),
+        materialsCost: Number(finalMaterialsCost),
+        markup: Number(finalMarkup),
+        discount: Number(finalDiscount),
+        taxRate: Number(finalTaxRate),
         totalAmount,
-        estimatedHours: estimatedHours !== undefined ? Number(estimatedHours) : existing.estimatedHours,
-        validUntil: validUntil ? new Date(validUntil) : existing.validUntil,
-        templateName: templateName ?? existing.templateName,
-        attachmentUrl: attachmentUrl ?? existing.attachmentUrl,
+        tiers: tiers !== undefined ? tiers : existing.tiers,
+        measurements: measurements !== undefined ? measurements : existing.measurements,
+        estimatedHours: estimatedHours !== undefined ? (estimatedHours ? Number(estimatedHours) : null) : existing.estimatedHours,
+        validUntil: validUntil !== undefined ? (validUntil ? new Date(validUntil) : null) : existing.validUntil,
+        notes: notes !== undefined ? notes : existing.notes,
+        customerNotes: customerNotes !== undefined ? customerNotes : existing.customerNotes,
+        termsConditions: termsConditions !== undefined ? termsConditions : existing.termsConditions,
+        photos: photos !== undefined ? photos : existing.photos,
+        templateName: templateName !== undefined ? templateName : existing.templateName,
+        attachmentUrl: attachmentUrl !== undefined ? attachmentUrl : existing.attachmentUrl,
       },
     });
 
@@ -115,6 +175,7 @@ export async function PUT(
       await eventBus.emit('contractor.estimate.updated', {
         estimateId: estimate.id,
         contractorId: estimate.contractorId,
+        contractorProfileId: estimate.contractorProfileId,
         contractorUserId: session.user.id,
         title: estimate.title,
         totalAmount: Number(estimate.totalAmount),
@@ -141,13 +202,16 @@ export async function DELETE(
 
     const { id } = await params;
 
-    // Verify ownership
     const existing = await prisma.contractorEstimate.findUnique({
       where: { id },
-      include: { contractor: { select: { userId: true } } },
     });
 
-    if (!existing || existing.contractor.userId !== session.user.id) {
+    if (!existing) {
+      return NextResponse.json({ error: 'Estimate not found' }, { status: 404 });
+    }
+
+    const isOwner = await verifyOwnership(session.user.id, existing);
+    if (!isOwner) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
@@ -157,6 +221,7 @@ export async function DELETE(
       await eventBus.emit('contractor.estimate.deleted', {
         estimateId: id,
         contractorId: existing.contractorId,
+        contractorProfileId: existing.contractorProfileId,
         contractorUserId: session.user.id,
       });
     }
