@@ -76,7 +76,7 @@ app.prepare().then(async () => {
       console.error(err);
       process.exit(1);
     })
-    .listen(port, () => {
+    .listen(port, hostname, () => {
       console.log(`> Ready on http://${hostname}:${port}`);
       if (dev) {
         console.log('> WebSocket server initialized');
