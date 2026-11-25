@@ -323,7 +323,7 @@ export default function ContractorMarketplace({
                       className={`h-full bg-white border shadow-2xl hover:shadow-2xl hover:scale-[1.02] transition-all cursor-pointer overflow-hidden group ${contractor.isSponsored ? 'border-amber-400 border-2' : 'border-black'}`}
                     >
                       {/* Banner / Ad / Logo image - big background */}
-                      <div className='relative aspect-[4/3] bg-gradient-to-br from-blue-500 to-cyan-500'>
+                      <div className='relative aspect-[2/1] bg-gradient-to-br from-blue-500 to-cyan-500'>
                         {contractor.coverPhoto ? (
                           <img
                             src={contractor.coverPhoto}

@@ -4317,6 +4317,9 @@ model ContractorProfile {
   reviewsReceived ContractorReview[]
   favoriteBy      FavoriteContractor[]
 
+  // Marketplace inquiry threads (from partner sites e.g. Property Flow HQ)
+  marketplaceThreads MarketplaceMessageThread[]
+
   // Usage Tracking (Subscription Tiers)
   usageTracking ContractorUsageTracking?
 
@@ -8577,5 +8580,45 @@ model PublicContractEsign {
   @@index([contractorEmail])
   @@index([customerEmail])
   @@index([status])
+  @@index([createdAt])
+}
+
+/// Marketplace inquiry thread between an external customer (from a partner site
+/// such as Property Flow HQ) and a contractor. The customer need not have an
+/// account anywhere — they are identified by name + email — so this cannot use
+/// the User-based Thread system. One thread per (contractor, customer email).
+model MarketplaceMessageThread {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contractorId   String   @db.Uuid
+  customerName   String
+  customerEmail  String
+  customerUserId String?  @db.Uuid // partner-site user id if logged in (opaque here)
+  leadId         String?  @db.Uuid // optional link to a ContractorLead
+  lastMessageAt  DateTime @default(now()) @db.Timestamp(6)
+  createdAt      DateTime @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime @updatedAt
+
+  contractor ContractorProfile    @relation(fields: [contractorId], references: [id], onDelete: Cascade)
+  messages   MarketplaceMessage[]
+
+  @@unique([contractorId, customerEmail])
+  @@index([contractorId])
+  @@index([lastMessageAt])
+}
+
+/// A single message within a MarketplaceMessageThread. `senderSide` records
+/// whether the customer or the contractor sent it.
+model MarketplaceMessage {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  threadId   String    @db.Uuid
+  senderSide String // 'customer' | 'contractor'
+  senderName String
+  content    String
+  readAt     DateTime? @db.Timestamp(6)
+  createdAt  DateTime  @default(now()) @db.Timestamp(6)
+
+  thread MarketplaceMessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([threadId])
   @@index([createdAt])
 }
