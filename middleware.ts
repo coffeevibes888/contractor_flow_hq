@@ -129,16 +129,9 @@ export async function middleware(request: NextRequest) {
       });
     }
 
-    // For actual requests, add CORS headers and forward
-    const mobileHeaders = new Headers(request.headers);
-    mobileHeaders.set('x-pathname', pathname);
-    const response = NextResponse.next({
-      request: { headers: mobileHeaders },
-    });
-    response.headers.set('Access-Control-Allow-Origin', origin);
-    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    return response;
+    // Let non-OPTIONS requests continue through the standard forwarding path
+    // below. Keeping one NextResponse.next() path avoids route-dispatch issues
+    // while still preserving the request pathname headers.
   }
 
   // ── Pathname header + full URL (path+search) ─────────────────────────────
@@ -150,9 +143,18 @@ export async function middleware(request: NextRequest) {
   const search = request.nextUrl.search; // e.g. "?lc=abc123"
   requestHeaders.set('x-url', search ? `${pathname}${search}` : pathname);
 
-  return NextResponse.next({
+  const response = NextResponse.next({
     request: { headers: requestHeaders },
   });
+
+  if (pathname.startsWith('/api/mobile/')) {
+    const origin = request.headers.get('origin') || '*';
+    response.headers.set('Access-Control-Allow-Origin', origin);
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  }
+
+  return response;
 }
 
 export const config = {
